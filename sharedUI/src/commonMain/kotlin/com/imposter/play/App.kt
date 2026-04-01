@@ -1,15 +1,10 @@
 package com.imposter.play
 
-import androidx.compose.runtime.*
-import com.imposter.play.di.appModule
 import com.imposter.play.theme.AppTheme
-import org.koin.mp.KoinPlatform
+import androidx.compose.runtime.Composable
+import com.imposter.play.ui.navigation.AppNavigator
 
 @Composable
 fun App() = AppTheme {
-    LaunchedEffect(Unit) {
-        if (KoinPlatform.getKoinOrNull() == null) {
-            KoinPlatform.startKoin(modules = listOf(appModule()), level = org.koin.core.logger.Level.NONE)
-        }
-    }
+    AppNavigator()
 }

@@ -1,22 +1,12 @@
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.window.ComposeUIViewController
 import com.imposter.play.App
-import platform.UIKit.UIApplication
-import platform.UIKit.UIStatusBarStyleDarkContent
-import platform.UIKit.UIStatusBarStyleLightContent
+import com.imposter.play.di.initKoin
 import platform.UIKit.UIViewController
-import platform.UIKit.setStatusBarStyle
+import platform.Foundation.NSHomeDirectory
 
-fun MainViewController(): UIViewController = ComposeUIViewController { 
-    App()
-}
-
-@Composable
-private fun ThemeChanged(isDark: Boolean) {
-    LaunchedEffect(isDark) {
-        UIApplication.sharedApplication.setStatusBarStyle(
-            if (isDark) UIStatusBarStyleDarkContent else UIStatusBarStyleLightContent
-        )
+fun MainViewController(): UIViewController {
+    initKoin(prefsPath = "${NSHomeDirectory()}/Documents/imposter_prefs.json")
+    return ComposeUIViewController {
+        App()
     }
 }
