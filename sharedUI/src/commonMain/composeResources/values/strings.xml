@@ -1,3 +1,6 @@
 <resources>
-
+    <string name="phase2_preview_badge">CLASSIFIED · SOCIAL DEDUCTION</string>
+    <string name="phase2_preview_primary">PLAY NOW</string>
+    <string name="phase2_preview_danger">VOTE NOW</string>
+    <string name="phase2_preview_ghost">CUSTOMIZE GAME</string>
 </resources>
