@@ -46,7 +46,10 @@ import imposter.sharedui.generated.resources.nav_role_reveal
 import imposter.sharedui.generated.resources.nav_role_hint_title
 import imposter.sharedui.generated.resources.nav_role_imp_tip_1
 import imposter.sharedui.generated.resources.nav_role_imp_tip_2
+import imposter.sharedui.generated.resources.nav_role_imp_tip_no_hint
 import imposter.sharedui.generated.resources.nav_role_imposter_member
+import imposter.sharedui.generated.resources.nav_role_no_hint_title
+import imposter.sharedui.generated.resources.nav_role_no_hint_value
 import imposter.sharedui.generated.resources.nav_role_pass_phone
 import imposter.sharedui.generated.resources.nav_role_secret_word
 import imposter.sharedui.generated.resources.nav_role_state_hidden
@@ -166,7 +169,14 @@ private fun RoleCard(role: PlayerRole) {
             Box(Modifier.fillMaxWidth().height(1.dp).background(accent.copy(alpha = 0.35f)))
             Spacer(Modifier.height(16.dp))
             Text(
-                text = if (isCrew) stringResource(Res.string.nav_role_secret_word) else stringResource(Res.string.nav_role_hint_title),
+                text = when (role) {
+                    is PlayerRole.Crew -> stringResource(Res.string.nav_role_secret_word)
+                    is PlayerRole.Imposter -> {
+                        if (role.hintEnabled) stringResource(Res.string.nav_role_hint_title)
+                        else stringResource(Res.string.nav_role_no_hint_title)
+                    }
+                    PlayerRole.Unknown -> stringResource(Res.string.nav_role_state_hidden)
+                },
                 style = androidx.compose.material3.MaterialTheme.typography.titleSmall,
                 color = ColorMuted,
             )
@@ -174,7 +184,10 @@ private fun RoleCard(role: PlayerRole) {
             Text(
                 text = when (role) {
                     is PlayerRole.Crew -> role.word
-                    is PlayerRole.Imposter -> role.hint
+                    is PlayerRole.Imposter -> {
+                        if (role.hintEnabled) role.hint
+                        else stringResource(Res.string.nav_role_no_hint_value)
+                    }
                     PlayerRole.Unknown -> stringResource(Res.string.nav_role_state_hidden)
                 },
                 style = androidx.compose.material3.MaterialTheme.typography.headlineLarge,
@@ -191,7 +204,11 @@ private fun RoleCard(role: PlayerRole) {
             if (!isCrew) {
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = stringResource(Res.string.nav_role_imp_tip_2),
+                    text = if (role is PlayerRole.Imposter && !role.hintEnabled) {
+                        stringResource(Res.string.nav_role_imp_tip_no_hint)
+                    } else {
+                        stringResource(Res.string.nav_role_imp_tip_2)
+                    },
                     style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
                     color = accent.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,

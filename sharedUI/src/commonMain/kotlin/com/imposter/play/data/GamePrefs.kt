@@ -8,5 +8,5 @@ data class GamePrefs(
     val playerNames: List<String> = emptyList(),
     val lastCategory: String = "RANDOM",
     val lastDifficulty: Int = 1,
+    val imposterHintEnabled: Boolean = false,
 )
-

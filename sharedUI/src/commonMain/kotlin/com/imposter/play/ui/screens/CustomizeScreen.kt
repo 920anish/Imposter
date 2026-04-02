@@ -50,6 +50,9 @@ import imposter.sharedui.generated.resources.nav_customize_close
 import imposter.sharedui.generated.resources.nav_customize_difficulty
 import imposter.sharedui.generated.resources.nav_customize_easy
 import imposter.sharedui.generated.resources.nav_customize_hard
+import imposter.sharedui.generated.resources.nav_customize_hint_off
+import imposter.sharedui.generated.resources.nav_customize_hint_on
+import imposter.sharedui.generated.resources.nav_customize_imposter_hint
 import imposter.sharedui.generated.resources.nav_customize_medium
 import imposter.sharedui.generated.resources.nav_customize_play
 import imposter.sharedui.generated.resources.nav_customize_players_hint
@@ -229,6 +232,42 @@ fun CustomizeScreen(
                         ) {
                             Text(text = label, color = if (difficulty == index) colors[index] else ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
                         }
+                    }
+                }
+                Spacer(Modifier.height(14.dp))
+                Text(
+                    text = stringResource(Res.string.nav_customize_imposter_hint),
+                    color = ColorMuted,
+                    style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        Modifier.weight(1f).height(36.dp)
+                            .border(1.dp, if (!config.imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                            .background(if (!config.imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                            .clickable { onConfigChange(config.copy(imposterHintEnabled = false)) },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.nav_customize_hint_off),
+                            color = if (!config.imposterHintEnabled) ColorCrew else ColorMuted,
+                            style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                    Box(
+                        Modifier.weight(1f).height(36.dp)
+                            .border(1.dp, if (config.imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                            .background(if (config.imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                            .clickable { onConfigChange(config.copy(imposterHintEnabled = true)) },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.nav_customize_hint_on),
+                            color = if (config.imposterHintEnabled) ColorCrew else ColorMuted,
+                            style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                        )
                     }
                 }
                 Spacer(Modifier.height(14.dp))

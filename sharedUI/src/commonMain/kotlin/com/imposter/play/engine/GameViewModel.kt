@@ -48,6 +48,7 @@ class GameViewModel(
                     playerNames = prefs.playerNames,
                     category = prefs.lastCategory,
                     difficulty = prefs.lastDifficulty.coerceIn(0, 2),
+                    imposterHintEnabled = prefs.imposterHintEnabled,
                 )
             )
         }
@@ -69,6 +70,7 @@ class GameViewModel(
                     playerNames = normalized.playerNames,
                     lastCategory = normalized.category,
                     lastDifficulty = normalized.difficulty,
+                    imposterHintEnabled = normalized.imposterHintEnabled,
                 )
             )
         }
@@ -213,6 +215,7 @@ class GameViewModel(
                     playerNames = config.playerNames,
                     lastCategory = config.category,
                     lastDifficulty = config.difficulty,
+                    imposterHintEnabled = config.imposterHintEnabled,
                 )
             )
         }
@@ -222,7 +225,10 @@ class GameViewModel(
         val current = _session.value
         val roleState = current.state as? GameState.RoleReveal ?: return PlayerRole.Unknown
         return if (roleState.playerIndex == current.imposterIndex) {
-            PlayerRole.Imposter(hint = current.currentWord.hint.ifBlank { "???" })
+            PlayerRole.Imposter(
+                hint = current.currentWord.hint.ifBlank { "???" },
+                hintEnabled = current.config.imposterHintEnabled,
+            )
         } else {
             PlayerRole.Crew(word = current.currentWord.real)
         }
@@ -240,6 +246,9 @@ class GameViewModel(
 
 sealed class PlayerRole {
     data class Crew(val word: String) : PlayerRole()
-    data class Imposter(val hint: String) : PlayerRole()
+    data class Imposter(
+        val hint: String,
+        val hintEnabled: Boolean,
+    ) : PlayerRole()
     data object Unknown : PlayerRole()
 }

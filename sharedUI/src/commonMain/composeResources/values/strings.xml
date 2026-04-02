@@ -16,6 +16,9 @@
     <string name="nav_customize_players_hint">Leave blank to use default names.</string>
     <string name="nav_customize_add_player">+ ADD PLAYER</string>
     <string name="nav_customize_difficulty">DIFFICULTY</string>
+    <string name="nav_customize_imposter_hint">IMPOSTER HINT</string>
+    <string name="nav_customize_hint_off">NO HINT</string>
+    <string name="nav_customize_hint_on">HINT ON</string>
     <string name="nav_customize_easy">EASY</string>
     <string name="nav_customize_medium">MEDIUM</string>
     <string name="nav_customize_hard">HARD</string>
@@ -35,9 +38,12 @@
     <string name="nav_role_imposter_member">THE IMPOSTER</string>
     <string name="nav_role_secret_word">SECRET WORD</string>
     <string name="nav_role_hint_title">YOUR HINT</string>
+    <string name="nav_role_no_hint_title">HINT</string>
+    <string name="nav_role_no_hint_value">NO HINT</string>
     <string name="nav_role_crew_tip">describe without saying the word</string>
     <string name="nav_role_imp_tip_1">blend in · don't get caught</string>
     <string name="nav_role_imp_tip_2">guess the crew's word to survive</string>
+    <string name="nav_role_imp_tip_no_hint">no hint this round · blend in by deduction</string>
     <string name="nav_role_state_crew">Crew</string>
     <string name="nav_role_state_imposter">Imposter</string>
     <string name="nav_role_state_hidden">Hidden</string>

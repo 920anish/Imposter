@@ -61,7 +61,8 @@ fun ResultScreen(
     val accent = if (crewWon) ColorWin else ColorImp
     val accentDim = if (crewWon) ColorWinDim else ColorImpDim
     val imposterName = session.normalizedPlayerNames.getOrNull(session.imposterIndex) ?: "Player ${session.imposterIndex + 1}"
-    val hint = session.currentWord.hint.ifBlank { "???" }
+    val hintEnabled = session.config.imposterHintEnabled
+    val hint = if (hintEnabled) session.currentWord.hint.ifBlank { "???" } else null
 
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = accent, opacity = 0.08f)
@@ -101,10 +102,12 @@ fun ResultScreen(
                             Text(text = stringResource(Res.string.nav_result_crew_word), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
                             Text(text = session.currentWord.real, color = ColorCrew, style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
                         }
-                        Box(Modifier.height(42.dp).width(1.dp).background(ColorBorder))
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = stringResource(Res.string.nav_result_their_hint), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
-                            Text(text = hint, color = ColorImp, style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+                        if (hintEnabled) {
+                            Box(Modifier.height(42.dp).width(1.dp).background(ColorBorder))
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(text = stringResource(Res.string.nav_result_their_hint), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
+                                Text(text = hint ?: "", color = ColorImp, style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+                            }
                         }
                     }
                 }
