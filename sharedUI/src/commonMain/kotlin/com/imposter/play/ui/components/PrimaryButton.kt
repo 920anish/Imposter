@@ -26,7 +26,7 @@ import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorText
 import imposter.sharedui.generated.resources.Res
-import imposter.sharedui.generated.resources.phase2_preview_primary
+import imposter.sharedui.generated.resources.preview_primary
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -79,7 +79,7 @@ private fun PrimaryButtonPreview() {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         PrimaryButton(
-            text = stringResource(Res.string.phase2_preview_primary),
+            text = stringResource(Res.string.preview_primary),
             onClick = {},
             modifier = Modifier.weight(1f),
         )

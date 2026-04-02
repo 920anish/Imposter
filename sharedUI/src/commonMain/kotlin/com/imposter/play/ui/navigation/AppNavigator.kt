@@ -1,6 +1,7 @@
 package com.imposter.play.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -8,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.imposter.play.engine.GameConfig
 import com.imposter.play.engine.GameIntent
 import com.imposter.play.engine.GameState
 import com.imposter.play.engine.GameViewModel
@@ -27,18 +27,27 @@ fun AppNavigator(
     val session by viewModel.session.collectAsState()
     val backStack = remember { mutableStateListOf<NavKey>(HomeRoute) }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadPrefs()
+    }
+
     NavDisplay(
         backStack = backStack,
         onBack = {
             if (backStack.size > 1) {
-                backStack.removeLastOrNull()
+                while (backStack.size > 1) {
+                    backStack.removeLastOrNull()
+                }
+                viewModel.onIntent(GameIntent.PlayAgain)
             }
         },
         entryProvider = entryProvider {
             entry<HomeRoute> {
                 HomeScreen(
+                    config = session.config,
+                    onConfigChange = { updated -> viewModel.onIntent(GameIntent.UpdateSetupConfig(updated)) },
                     onPlayNow = {
-                        viewModel.onIntent(GameIntent.StartGame(GameConfig(playerCount = 4)))
+                        viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))
                     },
                     onCustomize = { backStack.add(CustomizeRoute) },
@@ -46,12 +55,10 @@ fun AppNavigator(
             }
             entry<CustomizeRoute> {
                 CustomizeScreen(
+                    config = session.config,
+                    onConfigChange = { updated -> viewModel.onIntent(GameIntent.UpdateSetupConfig(updated)) },
                     onPlay = {
-                        viewModel.onIntent(
-                            GameIntent.StartGame(
-                                GameConfig(playerCount = session.config.playerCount)
-                            )
-                        )
+                        viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))
                     },
                     onClose = { backStack.removeLastOrNull() },
@@ -105,5 +112,12 @@ fun AppNavigator(
             }
         },
     )
-}
 
+    LaunchedEffect(session.state) {
+        if (session.state is GameState.Idle && backStack.lastOrNull() != HomeRoute) {
+                        while (backStack.size > 1) {
+                            backStack.removeLastOrNull()
+                        }
+        }
+    }
+}

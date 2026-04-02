@@ -17,7 +17,7 @@ import com.imposter.play.theme.ColorBorder
 fun GridBackground(
     modifier: Modifier = Modifier,
     tint: Color = ColorBorder,
-    opacity: Float = 0.22f,
+    opacity: Float = 0.28f,
     spacing: Dp = 44.dp,
 ) {
     val alpha = opacity.coerceIn(0f, 1f)
@@ -29,6 +29,7 @@ fun GridBackground(
             .background(ColorBg)
             .drawWithCache {
                 val spacingPx = spacing.toPx().coerceAtLeast(8f)
+                val stroke = 1.dp.toPx().coerceAtLeast(1f)
                 onDrawBehind {
                     var x = 0f
                     while (x <= size.width) {
@@ -36,7 +37,7 @@ fun GridBackground(
                             color = gridColor,
                             start = Offset(x, 0f),
                             end = Offset(x, size.height),
-                            strokeWidth = 1f,
+                            strokeWidth = stroke,
                         )
                         x += spacingPx
                     }
@@ -47,7 +48,7 @@ fun GridBackground(
                             color = gridColor,
                             start = Offset(0f, y),
                             end = Offset(size.width, y),
-                            strokeWidth = 1f,
+                            strokeWidth = stroke,
                         )
                         y += spacingPx
                     }

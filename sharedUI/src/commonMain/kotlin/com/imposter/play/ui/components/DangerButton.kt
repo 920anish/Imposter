@@ -25,7 +25,7 @@ import com.imposter.play.theme.ColorImp
 import com.imposter.play.theme.ColorImpDim
 import com.imposter.play.theme.ColorMuted
 import imposter.sharedui.generated.resources.Res
-import imposter.sharedui.generated.resources.phase2_preview_danger
+import imposter.sharedui.generated.resources.preview_danger
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -74,7 +74,7 @@ fun DangerButton(
 @Composable
 private fun DangerButtonPreview() {
     DangerButton(
-        text = stringResource(Res.string.phase2_preview_danger),
+        text = stringResource(Res.string.preview_danger),
         onClick = {},
         modifier = Modifier.fillMaxWidth().padding(16.dp),
     )

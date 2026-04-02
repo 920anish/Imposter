@@ -14,7 +14,7 @@ import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.IBMPlexMono
 import imposter.sharedui.generated.resources.Res
-import imposter.sharedui.generated.resources.phase2_preview_badge
+import imposter.sharedui.generated.resources.preview_badge
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -41,7 +41,7 @@ fun MonoBadge(
 @Composable
 private fun MonoBadgePreview() {
     MonoBadge(
-        text = stringResource(Res.string.phase2_preview_badge),
+        text = stringResource(Res.string.preview_badge),
         modifier = Modifier.fillMaxWidth(),
     )
 }

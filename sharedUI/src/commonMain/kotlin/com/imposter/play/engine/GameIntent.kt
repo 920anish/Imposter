@@ -1,6 +1,7 @@
 package com.imposter.play.engine
 
 sealed class GameIntent {
+    data class UpdateSetupConfig(val config: GameConfig) : GameIntent()
     data class StartGame(val config: GameConfig) : GameIntent()
     data object RevealCard : GameIntent()
     data object NextPlayer : GameIntent()
@@ -10,4 +11,3 @@ sealed class GameIntent {
     data object RevealResult : GameIntent()
     data object PlayAgain : GameIntent()
 }
-

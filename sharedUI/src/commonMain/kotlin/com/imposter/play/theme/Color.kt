@@ -5,11 +5,11 @@ import androidx.compose.ui.graphics.Color
 // ── Imposter Design Tokens ──────────────────────────────────
 val ColorBg          = Color(0xFF06070F)
 val ColorSurface     = Color(0xFF0C0F1E)
-val ColorBorder      = Color(0xFF1A1F32)
-val ColorBorder2     = Color(0xFF222840)
+val ColorBorder      = Color(0xFF2B3452)
+val ColorBorder2     = Color(0xFF3A4669)
 val ColorText        = Color(0xFFE0DBFF)
-val ColorMuted       = Color(0xFF323860)
-val ColorDim         = Color(0xFF131726)
+val ColorMuted       = Color(0xFF7A86B1)
+val ColorDim         = Color(0xFF4D587E)
 
 val ColorCrew        = Color(0xFF3169FF)
 val ColorCrewDim     = Color(0x1A3169FF)

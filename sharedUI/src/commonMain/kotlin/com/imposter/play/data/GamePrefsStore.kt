@@ -24,4 +24,3 @@ class GamePrefsStore(
         store.set(prefs)
     }
 }
-

@@ -6,6 +6,7 @@ import com.imposter.play.data.GamePrefs
 import com.imposter.play.data.GamePrefsStore
 import com.imposter.play.data.WordDeck
 import com.imposter.play.data.Word
+import com.imposter.play.data.WordDictionary
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ class GameViewModel(
 
     fun onIntent(intent: GameIntent) {
         when (intent) {
+            is GameIntent.UpdateSetupConfig -> updateSetupConfig(intent.config)
             is GameIntent.StartGame -> startGame(intent.config)
             GameIntent.RevealCard -> revealCard()
             GameIntent.NextPlayer -> nextPlayer()
@@ -39,13 +41,44 @@ class GameViewModel(
 
     fun loadPrefs() {
         viewModelScope.launch {
-            prefsStore.load()
+            val prefs = prefsStore.load()
+            _session.value = _session.value.copy(
+                config = GameConfig(
+                    playerCount = prefs.playerCount.coerceIn(3, 10),
+                    playerNames = prefs.playerNames,
+                    category = prefs.lastCategory,
+                    difficulty = prefs.lastDifficulty.coerceIn(0, 2),
+                )
+            )
+        }
+    }
+
+    private fun updateSetupConfig(config: GameConfig) {
+        val normalized = config.copy(
+            playerCount = config.playerCount.coerceIn(3, 10),
+            category = normalizeCategory(config.category),
+            difficulty = config.difficulty.coerceIn(0, 2),
+        )
+        _session.value = _session.value.copy(
+            config = normalized
+        )
+        viewModelScope.launch {
+            prefsStore.save(
+                GamePrefs(
+                    playerCount = normalized.playerCount,
+                    playerNames = normalized.playerNames,
+                    lastCategory = normalized.category,
+                    lastDifficulty = normalized.difficulty,
+                )
+            )
         }
     }
 
     private fun startGame(config: GameConfig) {
         val normalizedConfig = config.copy(
             playerCount = config.playerCount.coerceIn(3, 10),
+            category = normalizeCategory(config.category),
+            difficulty = config.difficulty.coerceIn(0, 2),
         )
         wordDeck = WordDeck(
             category = normalizedConfig.category,
@@ -82,9 +115,11 @@ class GameViewModel(
         val lastPlayerIndex = current.config.playerCount - 1
 
         if (state.playerIndex >= lastPlayerIndex) {
+            discussionTimerJob?.cancel()
             _session.value = current.copy(
-                state = GameState.Discussion(secondsLeft = 180, isRunning = false),
+                state = GameState.Discussion(secondsLeft = 180, isRunning = true),
             )
+            startDiscussionCountdown()
             return
         }
 
@@ -146,6 +181,8 @@ class GameViewModel(
         val current = _session.value
         if (current.state !is GameState.Voting) return
         if (playerIndex !in 0 until current.config.playerCount) return
+        val totalVotesCast = current.votes.sumOf { it.votes }
+        if (totalVotesCast >= current.config.playerCount) return
 
         val updatedVotes = current.votes.map { vote ->
             if (vote.playerIndex == playerIndex) vote.copy(votes = vote.votes + 1) else vote
@@ -164,7 +201,8 @@ class GameViewModel(
 
     private fun playAgain() {
         discussionTimerJob?.cancel()
-        _session.value = GameSession()
+        val preservedConfig = _session.value.config
+        _session.value = GameSession(config = preservedConfig)
     }
 
     private fun persistStartPreferences(config: GameConfig) {
@@ -189,6 +227,15 @@ class GameViewModel(
             PlayerRole.Crew(word = current.currentWord.real)
         }
     }
+
+    private fun normalizeCategory(category: String): String {
+        val normalized = category.trim().uppercase()
+        return if (normalized == WordDictionary.CATEGORY_RANDOM || normalized in WordDictionary.words.keys) {
+            normalized
+        } else {
+            WordDictionary.CATEGORY_RANDOM
+        }
+    }
 }
 
 sealed class PlayerRole {
@@ -196,4 +243,3 @@ sealed class PlayerRole {
     data class Imposter(val hint: String) : PlayerRole()
     data object Unknown : PlayerRole()
 }
-
