@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -72,7 +73,7 @@ fun ResultScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 18.dp),
             ) {
                 MonoBadge(
                     text = if (crewWon) stringResource(Res.string.nav_result_caught) else stringResource(Res.string.nav_result_escaped),
@@ -88,6 +89,9 @@ fun ResultScreen(
                 RoleRevealCard(
                     accent = accent,
                     accentDim = accentDim,
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
+                    topInset = 8.dp,
+                    bottomInset = 8.dp,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Text(text = stringResource(Res.string.nav_result_imposter_was), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
