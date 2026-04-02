@@ -69,12 +69,11 @@ fun RoleRevealScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(bottom = 14.dp),
+                modifier = Modifier.fillMaxWidth().weight(1f),
             ) {
                 MonoBadge(
                     text = "${(revealState?.playerIndex ?: 0) + 1} / ${session.config.playerCount}",
@@ -97,11 +96,13 @@ fun RoleRevealScreen(
                     }
                 }
             }
+            Spacer(Modifier.height(32.dp))
             PrimaryButton(
                 text = if (isCardRevealed) stringResource(Res.string.nav_role_done) else stringResource(Res.string.nav_role_reveal),
                 onClick = if (isCardRevealed) onNext else onReveal,
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.fillMaxWidth(),
             )
+            Spacer(Modifier.height(48.dp))
         }
     }
 }

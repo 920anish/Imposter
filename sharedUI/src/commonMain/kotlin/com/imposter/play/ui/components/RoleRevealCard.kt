@@ -60,7 +60,7 @@ fun RoleRevealCard(
         )
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(contentPadding),
             content = content,
         )

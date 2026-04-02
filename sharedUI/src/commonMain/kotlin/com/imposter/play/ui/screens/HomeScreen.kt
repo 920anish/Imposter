@@ -114,7 +114,7 @@ fun HomeScreen(
                     },
                 )
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(36.dp))
             PrimaryButton(
                 text = stringResource(Res.string.nav_home_play_now),
                 onClick = {

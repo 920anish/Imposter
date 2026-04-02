@@ -86,7 +86,7 @@ fun CustomizeScreen(
     androidx.compose.foundation.layout.Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(top = 48.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -276,6 +276,7 @@ fun CustomizeScreen(
                 }
             }
             Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(16.dp))
             PrimaryButton(
                 text = stringResource(Res.string.nav_customize_play),
                 onClick = {

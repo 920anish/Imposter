@@ -66,57 +66,54 @@ fun ResultScreen(
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = accent, opacity = 0.08f)
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(top = 56.dp, bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 18.dp),
+            MonoBadge(
+                text = if (crewWon) stringResource(Res.string.nav_result_caught) else stringResource(Res.string.nav_result_escaped),
+                color = accent,
+                border = accent.copy(alpha = 0.35f),
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = headline,
+                style = androidx.compose.material3.MaterialTheme.typography.displayLarge,
+                color = accent,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(16.dp))
+            RoleRevealCard(
+                accent = accent,
+                accentDim = accentDim,
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
+                maxHeight = 220.dp,
+                topInset = 8.dp,
+                bottomInset = 8.dp,
             ) {
-                MonoBadge(
-                    text = if (crewWon) stringResource(Res.string.nav_result_caught) else stringResource(Res.string.nav_result_escaped),
-                    color = accent,
-                    border = accent.copy(alpha = 0.35f),
-                )
-                Text(
-                    text = headline,
-                    style = androidx.compose.material3.MaterialTheme.typography.displayLarge,
-                    color = accent,
-                    textAlign = TextAlign.Center,
-                )
-                RoleRevealCard(
-                    accent = accent,
-                    accentDim = accentDim,
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-                    topInset = 8.dp,
-                    bottomInset = 8.dp,
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = stringResource(Res.string.nav_result_imposter_was), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
-                        Text(text = imposterName, color = ColorText, style = androidx.compose.material3.MaterialTheme.typography.displayMedium)
-                        Spacer(Modifier.height(12.dp))
-                        Box(Modifier.fillMaxWidth().height(1.dp).background(ColorBorder))
-                        Spacer(Modifier.height(14.dp))
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(text = stringResource(Res.string.nav_result_crew_word), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
-                                Text(text = session.currentWord.real, color = ColorCrew, style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-                            }
-                            Box(Modifier.height(42.dp).width(1.dp).background(ColorBorder))
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(text = stringResource(Res.string.nav_result_their_hint), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
-                                Text(text = hint, color = ColorImp, style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-                            }
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(Res.string.nav_result_imposter_was), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
+                    Text(text = imposterName, color = ColorText, style = androidx.compose.material3.MaterialTheme.typography.displayMedium)
+                    Spacer(Modifier.height(12.dp))
+                    Box(Modifier.fillMaxWidth().height(1.dp).background(ColorBorder))
+                    Spacer(Modifier.height(14.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = stringResource(Res.string.nav_result_crew_word), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
+                            Text(text = session.currentWord.real, color = ColorCrew, style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+                        }
+                        Box(Modifier.height(42.dp).width(1.dp).background(ColorBorder))
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = stringResource(Res.string.nav_result_their_hint), color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
+                            Text(text = hint, color = ColorImp, style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
             }
+            Spacer(Modifier.weight(1f))
             PrimaryButton(
                 text = stringResource(Res.string.nav_result_play_again),
                 onClick = onPlayAgain,
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
