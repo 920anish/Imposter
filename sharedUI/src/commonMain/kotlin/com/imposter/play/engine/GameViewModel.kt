@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.imposter.play.data.GamePrefs
 import com.imposter.play.data.GamePrefsStore
 import com.imposter.play.data.WordDeck
-import com.imposter.play.data.Word
 import com.imposter.play.data.WordDictionary
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

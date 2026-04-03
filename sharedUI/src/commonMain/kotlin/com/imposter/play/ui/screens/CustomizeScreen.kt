@@ -86,7 +86,7 @@ fun CustomizeScreen(
     }
     var difficulty by remember(config.difficulty) { mutableIntStateOf(config.difficulty.coerceIn(0, 2)) }
 
-    androidx.compose.foundation.layout.Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
         Column(
             modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(top = 48.dp, bottom = 24.dp),
@@ -159,6 +159,8 @@ fun CustomizeScreen(
                                 },
                                 singleLine = true,
                                 textStyle = androidx.compose.material3.MaterialTheme.typography.bodyMedium.copy(color = ColorText),
+                                cursorBrush = androidx.compose.ui.graphics.SolidColor(ColorCrew),
+
                                 modifier = Modifier.fillMaxWidth(),
                                 decorationBox = { innerTextField ->
                                     if (name.isBlank()) {
