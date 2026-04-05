@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="432dp"
+            android:height="432dp"
+            android:viewportWidth="360"
+            android:viewportHeight="360">
+
+            <group
+                android:name="maskGroup"
+                android:pivotX="180"
+                android:pivotY="181"
+                android:scaleX="0.88"
+                android:scaleY="0.88"
+                android:alpha="0">
+
+                <!-- shadow depth layer -->
+                <path
+                    android:fillColor="#0A0C1C"
+                    android:fillAlpha="0.55"
+                    android:translateY="7"
+                    android:pathData="M 180 110 C 180 110, 140 104, 105 118 C 75 130, 62 158, 62 190 C 62 228, 78 252, 104 252 C 128 252, 144 236, 156 214 C 166 196, 172 184, 180 181 C 188 184, 194 196, 204 214 C 216 236, 232 252, 256 252 C 282 252, 298 228, 298 190 C 298 158, 285 130, 255 118 C 220 104, 180 110, 180 110 Z" />
+
+                <!-- main mask body with gradient -->
+                <path
+                    android:pathData="M 180 110 C 180 110, 140 104, 105 118 C 75 130, 62 158, 62 190 C 62 228, 78 252, 104 252 C 128 252, 144 236, 156 214 C 166 196, 172 184, 180 181 C 188 184, 194 196, 204 214 C 216 236, 232 252, 256 252 C 282 252, 298 228, 298 190 C 298 158, 285 130, 255 118 C 220 104, 180 110, 180 110 Z">
+                    <aapt:attr name="android:fillColor">
+                        <gradient
+                            android:type="linear"
+                            android:startX="180" android:startY="104"
+                            android:endX="180" android:endY="252"
+                            android:startColor="#566BB8" android:endColor="#1C2A5C"/>
+                    </aapt:attr>
+                </path>
+
+                <!-- top highlight -->
+                <path
+                    android:pathData="M 180 110 C 180 110, 140 104, 105 118 C 75 130, 62 158, 62 172 C 82 148, 118 136, 180 134 C 242 136, 278 148, 298 172 C 298 158, 285 130, 255 118 C 220 104, 180 110, 180 110 Z">
+                    <aapt:attr name="android:fillColor">
+                        <gradient
+                            android:type="linear"
+                            android:startX="180" android:startY="104"
+                            android:endX="180" android:endY="172"
+                            android:startColor="#8EA4DC" android:endColor="#00000000"/>
+                    </aapt:attr>
+                </path>
+
+                <!-- outer border stroke -->
+                <path
+                    android:fillColor="#00000000"
+                    android:strokeColor="#5068A8"
+                    android:strokeWidth="1.8"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:pathData="M 180 110 C 180 110, 140 104, 105 118 C 75 130, 62 158, 62 190 C 62 228, 78 252, 104 252 C 128 252, 144 236, 156 214 C 166 196, 172 184, 180 181 C 188 184, 194 196, 204 214 C 216 236, 232 252, 256 252 C 282 252, 298 228, 298 190 C 298 158, 285 130, 255 118 C 220 104, 180 110, 180 110 Z" />
+
+                <!-- left eye group -->
+                <group
+                    android:name="leftEye"
+                    android:pivotX="128"
+                    android:pivotY="168"
+                    android:scaleY="1.0">
+                    <path
+                        android:fillColor="#00000000"
+                        android:strokeColor="#0A0F28"
+                        android:strokeWidth="4"
+                        android:pathData="M 128 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+                    <path
+                        android:fillColor="#06070F"
+                        android:pathData="M 128 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+                    <path
+                        android:fillColor="#00000000"
+                        android:strokeColor="#283C78"
+                        android:strokeWidth="1.2"
+                        android:pathData="M 128 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+                    <path
+                        android:fillColor="#1A2860"
+                        android:fillAlpha="0.55"
+                        android:pathData="M 118 160 C 120 156, 128 155, 132 158 C 130 164, 122 164, 118 160 Z" />
+                </group>
+
+                <!-- right eye group -->
+                <group
+                    android:name="rightEye"
+                    android:pivotX="232"
+                    android:pivotY="168"
+                    android:scaleY="1.0">
+                    <path
+                        android:fillColor="#00000000"
+                        android:strokeColor="#0A0F28"
+                        android:strokeWidth="4"
+                        android:pathData="M 232 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+                    <path
+                        android:fillColor="#06070F"
+                        android:pathData="M 232 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+                    <path
+                        android:fillColor="#00000000"
+                        android:strokeColor="#283C78"
+                        android:strokeWidth="1.2"
+                        android:pathData="M 232 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+                    <path
+                        android:fillColor="#1A2860"
+                        android:fillAlpha="0.55"
+                        android:pathData="M 222 160 C 224 156, 232 155, 236 158 C 234 164, 226 164, 222 160 Z" />
+                </group>
+
+                <!-- nose bridge arc -->
+                <path
+                    android:fillColor="#00000000"
+                    android:strokeColor="#3A508A"
+                    android:strokeWidth="1.0"
+                    android:strokeLineCap="round"
+                    android:pathData="M 162 173 Q 180 182, 198 173" />
+
+            </group>
+        </vector>
+    </aapt:attr>
+
+    <!-- mask fade in + scale up -->
+    <target android:name="maskGroup">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="500"
+                    android:propertyName="alpha"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:interpolator="@android:interpolator/decelerate_quad"/>
+                <objectAnimator
+                    android:duration="500"
+                    android:propertyName="scaleX"
+                    android:valueFrom="0.88"
+                    android:valueTo="1.0"
+                    android:interpolator="@android:interpolator/decelerate_quad"/>
+                <objectAnimator
+                    android:duration="500"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0.88"
+                    android:valueTo="1.0"
+                    android:interpolator="@android:interpolator/decelerate_quad"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <!-- left eye blink — starts after mask appears -->
+    <target android:name="leftEye">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="520"
+                    android:propertyName="scaleY"
+                    android:valueFrom="1.0"
+                    android:valueTo="1.0"/>
+                <objectAnimator
+                    android:duration="80"
+                    android:propertyName="scaleY"
+                    android:valueFrom="1.0"
+                    android:valueTo="0.0"
+                    android:interpolator="@android:interpolator/accelerate_quad"/>
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0.0"
+                    android:valueTo="1.0"
+                    android:interpolator="@android:interpolator/decelerate_quad"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <!-- right eye blink — 28ms offset for natural feel -->
+    <target android:name="rightEye">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="548"
+                    android:propertyName="scaleY"
+                    android:valueFrom="1.0"
+                    android:valueTo="1.0"/>
+                <objectAnimator
+                    android:duration="80"
+                    android:propertyName="scaleY"
+                    android:valueFrom="1.0"
+                    android:valueTo="0.0"
+                    android:interpolator="@android:interpolator/accelerate_quad"/>
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0.0"
+                    android:valueTo="1.0"
+                    android:interpolator="@android:interpolator/decelerate_quad"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+</animated-vector>

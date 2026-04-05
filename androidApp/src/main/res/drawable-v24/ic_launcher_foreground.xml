@@ -186,18 +186,5 @@
           android:strokeLineCap="round"
           android:pathData="M 162 173 Q 180 182, 198 173" />
 
-      <!-- ═══════════════════════════════════════════
-           8. VENTILATION SLOTS  — lower centre
-           Three small pill-shaped relief slots at the
-           bottom of the mask; a common tactical/cinematic
-           detail that reads well even at launcher size.
-      ═══════════════════════════════════════════ -->
-      <path android:fillColor="#182048"
-          android:pathData="M 165 228 a 5 3 0 0 1 10 0 a 5 3 0 0 1 -10 0 Z"/>
-      <path android:fillColor="#182048"
-          android:pathData="M 175 228 a 5 3 0 0 1 10 0 a 5 3 0 0 1 -10 0 Z"/>
-      <path android:fillColor="#182048"
-          android:pathData="M 185 228 a 5 3 0 0 1 10 0 a 5 3 0 0 1 -10 0 Z"/>
-
   </group>
 </vector>
