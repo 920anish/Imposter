@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Base deep near-black fill -->
+    <path android:pathData="M0,0h108v108h-108z"
+        android:fillColor="#060810"/>
+
+    <!-- Radial glow: subtle navy centre lifting from pure black -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="radial"
+                android:centerX="54"
+                android:centerY="42"
+                android:gradientRadius="64"
+                android:startColor="#1A2444"
+                android:endColor="#00000000"/>
+        </aapt:attr>
+    </path>
+
+    <!-- Subtle top-left ambient scatter -->
+    <path android:pathData="M0,0h54v54h-54z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="radial"
+                android:centerX="14"
+                android:centerY="14"
+                android:gradientRadius="40"
+                android:startColor="#14213800"
+                android:endColor="#00000000"/>
+        </aapt:attr>
+    </path>
+
+</vector>

@@ -1,113 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ic_launcher_foreground.xml — redesigned
+    viewport: 360 × 360  (standard Android adaptive icon foreground)
+    safe zone: 66px inset each side  →  drawable area ~228 × 228
+    mask centred at (180, 185); eyes sit squarely inside the mask body
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="360"
-    android:viewportHeight="380">
+    android:viewportHeight="360">
   <group android:scaleX="0.8"
       android:scaleY="0.8"
       android:translateX="36"
-      android:translateY="38">
+      android:translateY="36">
 
-      <!-- shadow depth layer -->
+      <!-- ═══════════════════════════════════════════
+           1. DROP SHADOW  (offset 0,6  blur ~10)
+           Rendered as a slightly expanded, soft-dark
+           copy shifted down so the mask appears to
+           float above the background.
+      ═══════════════════════════════════════════ -->
       <path
-          android:fillColor="#0D1220"
+          android:fillColor="#0A0C1C"
+          android:fillAlpha="0.55"
+          android:translateY="7"
           android:pathData="
-              M 63 198
-              C 63 153 77 133 103 128
-              C 121 124 141 131 161 137
-              C 169 140 176 141 183 141
-              C 190 141 197 140 205 137
-              C 225 131 245 124 263 128
-              C 289 133 305 153 305 198
-              C 305 237 291 258 271 258
-              C 253 258 239 243 229 223
-              C 219 203 213 192 197 187
-              C 192 185 188 185 183 185
-              C 178 185 174 185 167 187
-              C 151 192 145 203 135 223
-              C 125 243 111 258 93 258
-              C 73 258 63 237 63 198
-              Z"
-          android:translateX="4"
-          android:translateY="6" />
+              M 180 110
+              C 180 110, 140 104, 105 118
+              C  75 130,  62 158,  62 190
+              C  62 228,  78 252,  104 252
+              C  128 252, 144 236,  156 214
+              C  166 196, 172 184,  180 181
+              C  188 184, 194 196,  204 214
+              C  216 236, 232 252,  256 252
+              C  282 252, 298 228,  298 190
+              C  298 158, 285 130,  255 118
+              C  220 104, 180 110, 180 110
+              Z" />
 
-      <!-- main mask body -->
+      <!-- ═══════════════════════════════════════════
+           2. MASK BODY — rich blue-slate gradient
+           Taller & more centred; cheek wings curve
+           down naturally; top arch is pronounced.
+      ═══════════════════════════════════════════ -->
       <path
           android:pathData="
-              M 68 198
-              C 68 150 82 130 108 125
-              C 126 121 146 129 164 136
-              C 172 139 179 140 183 140
-              C 187 140 194 139 202 136
-              C 220 129 240 121 258 125
-              C 284 130 300 150 300 198
-              C 300 240 286 260 266 260
-              C 248 260 234 245 224 225
-              C 214 205 208 193 192 188
-              C 187 186 183 186 183 186
-              C 183 186 179 186 174 188
-              C 158 193 152 205 142 225
-              C 132 245 118 260 100 260
-              C 80 260 68 240 68 198
+              M 180 110
+              C 180 110, 140 104, 105 118
+              C  75 130,  62 158,  62 190
+              C  62 228,  78 252,  104 252
+              C  128 252, 144 236,  156 214
+              C  166 196, 172 184,  180 181
+              C  188 184, 194 196,  204 214
+              C  216 236, 232 252,  256 252
+              C  282 252, 298 228,  298 190
+              C  298 158, 285 130,  255 118
+              C  220 104, 180 110, 180 110
               Z">
           <aapt:attr name="android:fillColor">
               <gradient
-                  android:startColor="#3A4878"
-                  android:endColor="#1E2A4A"
-                  android:startY="125"
-                  android:endY="260"
-                  android:type="linear" />
+                  android:type="linear"
+                  android:startX="180"
+                  android:startY="104"
+                  android:endX="180"
+                  android:endY="252"
+                  android:startColor="#566BB8"
+                  android:endColor="#1C2A5C"/>
           </aapt:attr>
       </path>
 
-      <!-- left eye hole  -->
+      <!-- ═══════════════════════════════════════════
+           3. TOP SHEEN HIGHLIGHT
+           Simulates a gloss coat on the upper portion,
+           giving a premium curved-surface look.
+      ═══════════════════════════════════════════ -->
       <path
-          android:fillColor="#06070F"
-          android:pathData="M 127 172 m -36 0 a 36 23 0 1 0 72 0 a 36 23 0 1 0 -72 0" />
+          android:pathData="
+              M 180 110
+              C 180 110, 140 104, 105 118
+              C  75 130,  62 158,  62 172
+              C  82 148, 118 136, 180 134
+              C  242 136, 278 148, 298 172
+              C  298 158, 285 130,  255 118
+              C  220 104, 180 110, 180 110
+              Z">
+          <aapt:attr name="android:fillColor">
+              <gradient
+                  android:type="linear"
+                  android:startX="180"
+                  android:startY="104"
+                  android:endX="180"
+                  android:endY="172"
+                  android:startColor="#8EA4DC"
+                  android:endColor="#00000000"/>
+          </aapt:attr>
+      </path>
 
-      <!-- right eye hole -->
+      <!-- ═══════════════════════════════════════════
+           4. OUTER BORDER STROKE
+           Thin, slightly lighter than the body to
+           define the mask edge cleanly at small sizes.
+      ═══════════════════════════════════════════ -->
       <path
-          android:fillColor="#06070F"
-          android:pathData="M 239 172 m -36 0 a 36 23 0 1 0 72 0 a 36 23 0 1 0 -72 0" />
-
-      <!-- top highlight rim -->
-      <path
-          android:strokeColor="#5A6FA8"
-          android:strokeWidth="1.3"
+          android:fillColor="#00000000"
+          android:strokeColor="#5068A8"
+          android:strokeWidth="1.8"
           android:strokeLineCap="round"
-          android:fillColor="#00000000"
+          android:strokeLineJoin="round"
           android:pathData="
-              M 73 193
-              C 75 157 87 136 110 131
-              C 128 127 148 134 166 141
-              C 174 143 180 144 183 144
-              C 186 144 192 143 200 141
-              C 218 134 238 127 256 131
-              C 279 136 292 157 292 193" />
-
-      <!-- outer border stroke -->
-      <path
-          android:strokeColor="#2E3D62"
-          android:strokeWidth="1.3"
-          android:fillColor="#00000000"
-          android:pathData="
-              M 68 198
-              C 68 150 82 130 108 125
-              C 126 121 146 129 164 136
-              C 172 139 179 140 183 140
-              C 187 140 194 139 202 136
-              C 220 129 240 121 258 125
-              C 284 130 300 150 300 198
-              C 300 240 286 260 266 260
-              C 248 260 234 245 224 225
-              C 214 205 208 193 192 188
-              C 187 186 183 186 183 186
-              C 183 186 179 186 174 188
-              C 158 193 152 205 142 225
-              C 132 245 118 260 100 260
-              C 80 260 68 240 68 198
+              M 180 110
+              C 180 110, 140 104, 105 118
+              C  75 130,  62 158,  62 190
+              C  62 228,  78 252,  104 252
+              C  128 252, 144 236,  156 214
+              C  166 196, 172 184,  180 181
+              C  188 184, 194 196,  204 214
+              C  216 236, 232 252,  256 252
+              C  282 252, 298 228,  298 190
+              C  298 158, 285 130,  255 118
+              C  220 104, 180 110, 180 110
               Z" />
+
+      <!-- ═══════════════════════════════════════════
+           5. LEFT EYE CUTOUT
+           Centre: (128, 168)  — sits inside the mask,
+           vertically centred in the upper mask body.
+           rx=34 ry=23 → slightly wider than tall,
+           realistic for a goggle/visor eye shape.
+      ═══════════════════════════════════════════ -->
+      <!-- Eye socket depth shadow ring -->
+      <path
+          android:fillColor="#00000000"
+          android:strokeColor="#0A0F28"
+          android:strokeWidth="4"
+          android:pathData="M 128 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+      <!-- Eye socket fill -->
+      <path
+          android:fillColor="#06070F"
+          android:pathData="M 128 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+      <!-- Eye rim: inner glow ring -->
+      <path
+          android:fillColor="#00000000"
+          android:strokeColor="#283C78"
+          android:strokeWidth="1.2"
+          android:pathData="M 128 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+      <!-- Subtle lens reflection in upper-left of eye -->
+      <path
+          android:fillColor="#1A2860"
+          android:fillAlpha="0.55"
+          android:pathData="M 118 160 C 120 156, 128 155, 132 158 C 130 164, 122 164, 118 160 Z" />
+
+      <!-- ═══════════════════════════════════════════
+           6. RIGHT EYE CUTOUT
+           Centre: (232, 168) — mirrors the left eye.
+      ═══════════════════════════════════════════ -->
+      <path
+          android:fillColor="#00000000"
+          android:strokeColor="#0A0F28"
+          android:strokeWidth="4"
+          android:pathData="M 232 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+      <path
+          android:fillColor="#06070F"
+          android:pathData="M 232 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+      <path
+          android:fillColor="#00000000"
+          android:strokeColor="#283C78"
+          android:strokeWidth="1.2"
+          android:pathData="M 232 168 m -34 0 a 34 23 0 1 0 68 0 a 34 23 0 1 0 -68 0" />
+      <path
+          android:fillColor="#1A2860"
+          android:fillAlpha="0.55"
+          android:pathData="M 222 160 C 224 156, 232 155, 236 158 C 234 164, 226 164, 222 160 Z" />
+
+      <!-- ═══════════════════════════════════════════
+           7. NOSE BRIDGE  — subtle centre seam
+           A very soft V connecting the two eye wells,
+           reinforcing the symmetry and tactile depth.
+      ═══════════════════════════════════════════ -->
+      <path
+          android:fillColor="#00000000"
+          android:strokeColor="#3A508A"
+          android:strokeWidth="1.0"
+          android:strokeLineCap="round"
+          android:pathData="M 162 173 Q 180 182, 198 173" />
+
+      <!-- ═══════════════════════════════════════════
+           8. VENTILATION SLOTS  — lower centre
+           Three small pill-shaped relief slots at the
+           bottom of the mask; a common tactical/cinematic
+           detail that reads well even at launcher size.
+      ═══════════════════════════════════════════ -->
+      <path android:fillColor="#182048"
+          android:pathData="M 165 228 a 5 3 0 0 1 10 0 a 5 3 0 0 1 -10 0 Z"/>
+      <path android:fillColor="#182048"
+          android:pathData="M 175 228 a 5 3 0 0 1 10 0 a 5 3 0 0 1 -10 0 Z"/>
+      <path android:fillColor="#182048"
+          android:pathData="M 185 228 a 5 3 0 0 1 10 0 a 5 3 0 0 1 -10 0 Z"/>
 
   </group>
 </vector>
