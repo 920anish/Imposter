@@ -3,6 +3,7 @@ package com.imposter.play.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,7 +50,14 @@ fun HomeScreen(
     onCustomize: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var playerCount by remember(config.playerCount) { mutableIntStateOf(config.playerCount.coerceIn(3, 10)) }
+    var playerCount by remember(config.playerCount) {
+        mutableIntStateOf(
+            config.playerCount.coerceIn(
+                3,
+                10
+            )
+        )
+    }
     androidx.compose.foundation.layout.Box(
         modifier = modifier.fillMaxSize(),
     ) {
@@ -89,28 +97,31 @@ fun HomeScreen(
                     label = "−",
                     enabled = playerCount > 3,
                     onClick = {
-                    playerCount--
-                    onConfigChange(config.copy(playerCount = playerCount))
+                        playerCount--
+                        onConfigChange(config.copy(playerCount = playerCount))
                     },
                 )
-                Text(
-                    text = playerCount.toString(),
+                Box(
                     modifier = Modifier
                         .width(80.dp)
                         .height(64.dp)
                         .background(ColorSurface)
-                        .border(1.5.dp, ColorBorder2)
-                        .padding(top = 4.dp),
-                    style = androidx.compose.material3.MaterialTheme.typography.displayMedium,
-                    color = ColorText,
-                    textAlign = TextAlign.Center,
-                )
+                        .border(1.5.dp, ColorBorder2),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = playerCount.toString(),
+                        style = androidx.compose.material3.MaterialTheme.typography.displayMedium,
+                        color = ColorText,
+                        textAlign = TextAlign.Center,
+                    )
+                }
                 PickerStepButton(
                     label = "+",
                     enabled = playerCount < 10,
                     onClick = {
-                    playerCount++
-                    onConfigChange(config.copy(playerCount = playerCount))
+                        playerCount++
+                        onConfigChange(config.copy(playerCount = playerCount))
                     },
                 )
             }
