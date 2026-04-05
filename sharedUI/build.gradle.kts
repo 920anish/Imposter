@@ -54,6 +54,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.kstore.file)
+            api(libs.androidx.core.splashscreen)
         }
 
         iosMain.dependencies {
