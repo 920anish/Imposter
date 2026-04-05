@@ -3,110 +3,110 @@
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="360"
-    android:viewportHeight="360">
-  <group android:scaleX="0.85"
-      android:scaleY="0.85"
-      android:translateX="27"
-      android:translateY="27">
+    android:viewportHeight="380">
+  <group android:scaleX="0.9"
+      android:scaleY="0.9"
+      android:translateX="18"
+      android:translateY="19">  <!-- increased viewport height -->
 
-      <!-- shadow depth layer -->
+      <!-- shadow depth layer (slightly adjusted offset and scale) -->
       <path
           android:fillColor="#0D1220"
           android:pathData="
-              M 63 193
+              M 63 198
               C 63 153 77 133 103 128
               C 121 124 141 131 161 137
               C 169 140 176 141 183 141
               C 190 141 197 140 205 137
               C 225 131 245 124 263 128
-              C 289 133 305 153 305 193
-              C 305 227 291 243 271 243
-              C 253 243 239 231 229 215
-              C 219 199 213 189 197 185
-              C 192 183 188 183 183 183
-              C 178 183 174 183 167 185
-              C 151 189 145 199 135 215
-              C 125 231 111 243 93 243
-              C 73 243 63 227 63 193
+              C 289 133 305 153 305 198
+              C 305 237 291 258 271 258
+              C 253 258 239 243 229 223
+              C 219 203 213 192 197 187
+              C 192 185 188 185 183 185
+              C 178 185 174 185 167 187
+              C 151 192 145 203 135 223
+              C 125 243 111 258 93 258
+              C 73 258 63 237 63 198
               Z"
-          android:translateX="3"
-          android:translateY="5" />
+          android:translateX="4"
+          android:translateY="6" />
 
-      <!-- main mask body -->
+      <!-- main mask body (stretched vertically, slightly narrower) -->
       <path
           android:pathData="
-              M 63 193
-              C 63 153 77 133 103 128
-              C 121 124 141 131 161 137
-              C 169 140 176 141 183 141
-              C 190 141 197 140 205 137
-              C 225 131 245 124 263 128
-              C 289 133 305 153 305 193
-              C 305 227 291 243 271 243
-              C 253 243 239 231 229 215
-              C 219 199 213 189 197 185
-              C 192 183 188 183 183 183
-              C 178 183 174 183 167 185
-              C 151 189 145 199 135 215
-              C 125 231 111 243 93 243
-              C 73 243 63 227 63 193
+              M 68 198
+              C 68 150 82 130 108 125
+              C 126 121 146 129 164 136
+              C 172 139 179 140 183 140
+              C 187 140 194 139 202 136
+              C 220 129 240 121 258 125
+              C 284 130 300 150 300 198
+              C 300 240 286 260 266 260
+              C 248 260 234 245 224 225
+              C 214 205 208 193 192 188
+              C 187 186 183 186 183 186
+              C 183 186 179 186 174 188
+              C 158 193 152 205 142 225
+              C 132 245 118 260 100 260
+              C 80 260 68 240 68 198
               Z">
           <aapt:attr name="android:fillColor">
               <gradient
                   android:startColor="#3A4878"
                   android:endColor="#1E2A4A"
-                  android:startY="124"
-                  android:endY="243"
+                  android:startY="125"
+                  android:endY="260"
                   android:type="linear" />
           </aapt:attr>
       </path>
 
-      <!-- left eye hole -->
+      <!-- left eye hole (raised, slightly smaller and less stretched) -->
       <path
           android:fillColor="#06070F"
-          android:pathData="M 127 177 m -40 0 a 40 26 0 1 0 80 0 a 40 26 0 1 0 -80 0" />
+          android:pathData="M 127 172 m -36 0 a 36 23 0 1 0 72 0 a 36 23 0 1 0 -72 0" />
 
-      <!-- right eye hole -->
+      <!-- right eye hole (raised, slightly smaller and less stretched) -->
       <path
           android:fillColor="#06070F"
-          android:pathData="M 239 177 m -40 0 a 40 26 0 1 0 80 0 a 40 26 0 1 0 -80 0" />
+          android:pathData="M 239 172 m -36 0 a 36 23 0 1 0 72 0 a 36 23 0 1 0 -72 0" />
 
-      <!-- top highlight rim -->
+      <!-- top highlight rim (adjusted to new shape) -->
       <path
           android:strokeColor="#5A6FA8"
-          android:strokeWidth="1.2"
+          android:strokeWidth="1.3"
           android:strokeLineCap="round"
           android:fillColor="#00000000"
           android:pathData="
-              M 69 189
-              C 71 155 83 137 105 132
-              C 123 128 143 134 163 140
-              C 171 142 177 143 183 143
-              C 189 143 195 142 203 140
-              C 223 134 243 128 261 132
-              C 283 137 295 155 297 189" />
+              M 73 193
+              C 75 157 87 136 110 131
+              C 128 127 148 134 166 141
+              C 174 143 180 144 183 144
+              C 186 144 192 143 200 141
+              C 218 134 238 127 256 131
+              C 279 136 292 157 292 193" />
 
-      <!-- outer border stroke -->
+      <!-- outer border stroke (adjusted to new shape) -->
       <path
           android:strokeColor="#2E3D62"
-          android:strokeWidth="1.2"
+          android:strokeWidth="1.3"
           android:fillColor="#00000000"
           android:pathData="
-              M 63 193
-              C 63 153 77 133 103 128
-              C 121 124 141 131 161 137
-              C 169 140 176 141 183 141
-              C 190 141 197 140 205 137
-              C 225 131 245 124 263 128
-              C 289 133 305 153 305 193
-              C 305 227 291 243 271 243
-              C 253 243 239 231 229 215
-              C 219 199 213 189 197 185
-              C 192 183 188 183 183 183
-              C 178 183 174 183 167 185
-              C 151 189 145 199 135 215
-              C 125 231 111 243 93 243
-              C 73 243 63 227 63 193
+              M 68 198
+              C 68 150 82 130 108 125
+              C 126 121 146 129 164 136
+              C 172 139 179 140 183 140
+              C 187 140 194 139 202 136
+              C 220 129 240 121 258 125
+              C 284 130 300 150 300 198
+              C 300 240 286 260 266 260
+              C 248 260 234 245 224 225
+              C 214 205 208 193 192 188
+              C 187 186 183 186 183 186
+              C 183 186 179 186 174 188
+              C 158 193 152 205 142 225
+              C 132 245 118 260 100 260
+              C 80 260 68 240 68 198
               Z" />
 
   </group>
