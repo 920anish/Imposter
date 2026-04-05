@@ -1,0 +1,113 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="360"
+    android:viewportHeight="360">
+  <group android:scaleX="0.85"
+      android:scaleY="0.85"
+      android:translateX="27"
+      android:translateY="27">
+
+      <!-- shadow depth layer -->
+      <path
+          android:fillColor="#0D1220"
+          android:pathData="
+              M 63 193
+              C 63 153 77 133 103 128
+              C 121 124 141 131 161 137
+              C 169 140 176 141 183 141
+              C 190 141 197 140 205 137
+              C 225 131 245 124 263 128
+              C 289 133 305 153 305 193
+              C 305 227 291 243 271 243
+              C 253 243 239 231 229 215
+              C 219 199 213 189 197 185
+              C 192 183 188 183 183 183
+              C 178 183 174 183 167 185
+              C 151 189 145 199 135 215
+              C 125 231 111 243 93 243
+              C 73 243 63 227 63 193
+              Z"
+          android:translateX="3"
+          android:translateY="5" />
+
+      <!-- main mask body -->
+      <path
+          android:pathData="
+              M 63 193
+              C 63 153 77 133 103 128
+              C 121 124 141 131 161 137
+              C 169 140 176 141 183 141
+              C 190 141 197 140 205 137
+              C 225 131 245 124 263 128
+              C 289 133 305 153 305 193
+              C 305 227 291 243 271 243
+              C 253 243 239 231 229 215
+              C 219 199 213 189 197 185
+              C 192 183 188 183 183 183
+              C 178 183 174 183 167 185
+              C 151 189 145 199 135 215
+              C 125 231 111 243 93 243
+              C 73 243 63 227 63 193
+              Z">
+          <aapt:attr name="android:fillColor">
+              <gradient
+                  android:startColor="#3A4878"
+                  android:endColor="#1E2A4A"
+                  android:startY="124"
+                  android:endY="243"
+                  android:type="linear" />
+          </aapt:attr>
+      </path>
+
+      <!-- left eye hole -->
+      <path
+          android:fillColor="#06070F"
+          android:pathData="M 127 177 m -40 0 a 40 26 0 1 0 80 0 a 40 26 0 1 0 -80 0" />
+
+      <!-- right eye hole -->
+      <path
+          android:fillColor="#06070F"
+          android:pathData="M 239 177 m -40 0 a 40 26 0 1 0 80 0 a 40 26 0 1 0 -80 0" />
+
+      <!-- top highlight rim -->
+      <path
+          android:strokeColor="#5A6FA8"
+          android:strokeWidth="1.2"
+          android:strokeLineCap="round"
+          android:fillColor="#00000000"
+          android:pathData="
+              M 69 189
+              C 71 155 83 137 105 132
+              C 123 128 143 134 163 140
+              C 171 142 177 143 183 143
+              C 189 143 195 142 203 140
+              C 223 134 243 128 261 132
+              C 283 137 295 155 297 189" />
+
+      <!-- outer border stroke -->
+      <path
+          android:strokeColor="#2E3D62"
+          android:strokeWidth="1.2"
+          android:fillColor="#00000000"
+          android:pathData="
+              M 63 193
+              C 63 153 77 133 103 128
+              C 121 124 141 131 161 137
+              C 169 140 176 141 183 141
+              C 190 141 197 140 205 137
+              C 225 131 245 124 263 128
+              C 289 133 305 153 305 193
+              C 305 227 291 243 271 243
+              C 253 243 239 231 229 215
+              C 219 199 213 189 197 185
+              C 192 183 188 183 183 183
+              C 178 183 174 183 167 185
+              C 151 189 145 199 135 215
+              C 125 231 111 243 93 243
+              C 73 243 63 227 63 193
+              Z" />
+
+  </group>
+</vector>
