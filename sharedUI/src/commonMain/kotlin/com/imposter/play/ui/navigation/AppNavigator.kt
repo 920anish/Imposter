@@ -45,7 +45,13 @@ fun AppNavigator(
             entry<HomeRoute> {
                 HomeScreen(
                     config = session.config,
-                    onConfigChange = { updated -> viewModel.onIntent(GameIntent.UpdateSetupConfig(updated)) },
+                    onConfigChange = { updated ->
+                        viewModel.onIntent(
+                            GameIntent.UpdateSetupConfig(
+                                updated
+                            )
+                        )
+                    },
                     onPlayNow = {
                         viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))
@@ -56,7 +62,13 @@ fun AppNavigator(
             entry<CustomizeRoute> {
                 CustomizeScreen(
                     config = session.config,
-                    onConfigChange = { updated -> viewModel.onIntent(GameIntent.UpdateSetupConfig(updated)) },
+                    onConfigChange = { updated ->
+                        viewModel.onIntent(
+                            GameIntent.UpdateSetupConfig(
+                                updated
+                            )
+                        )
+                    },
                     onPlay = {
                         viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))
@@ -84,7 +96,6 @@ fun AppNavigator(
                     session = session,
                     onToggleTimer = { viewModel.onIntent(GameIntent.ToggleTimer) },
                     onVoteNow = {
-                        // Stop timer and start voting
                         viewModel.onIntent(GameIntent.StartVoting)
                         backStack.add(VoteRoute)
                     },
@@ -116,9 +127,9 @@ fun AppNavigator(
 
     LaunchedEffect(session.state) {
         if (session.state is GameState.Idle && backStack.lastOrNull() != HomeRoute) {
-                        while (backStack.size > 1) {
-                            backStack.removeLastOrNull()
-                        }
+            while (backStack.size > 1) {
+                backStack.removeLastOrNull()
+            }
         }
     }
 }

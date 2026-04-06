@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -26,11 +27,11 @@ fun RoleRevealCard(
     accentDim: Color,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(24.dp),
-    minHeight: androidx.compose.ui.unit.Dp = 0.dp,
-    maxHeight: androidx.compose.ui.unit.Dp = 430.dp,
-    topInset: androidx.compose.ui.unit.Dp = 10.dp,
-    bottomInset: androidx.compose.ui.unit.Dp = 10.dp,
-    shadowRadius: androidx.compose.ui.unit.Dp = 18.dp,
+    minHeight: Dp = 0.dp,
+    maxHeight: Dp = 430.dp,
+    topInset: Dp = 10.dp,
+    bottomInset: Dp = 10.dp,
+    shadowRadius: Dp = 18.dp,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val infinite = rememberInfiniteTransition(label = "cardGlow")

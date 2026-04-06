@@ -27,11 +27,8 @@ import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.DMSans
-import imposter.sharedui.generated.resources.Res
-import imposter.sharedui.generated.resources.preview_ghost
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun GhostButton(
@@ -86,11 +83,3 @@ fun GhostButton(
     }
 }
 
-@Composable
-private fun GhostButtonPreview() {
-    GhostButton(
-        text = stringResource(Res.string.preview_ghost),
-        onClick = {},
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-    )
-}

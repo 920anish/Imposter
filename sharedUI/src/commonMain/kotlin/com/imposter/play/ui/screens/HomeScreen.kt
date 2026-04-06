@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,16 +26,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.imposter.play.engine.GameConfig
-import com.imposter.play.ui.components.GhostButton
-import com.imposter.play.ui.components.GridBackground
-import com.imposter.play.ui.components.MonoBadge
-import com.imposter.play.ui.components.PickerStepButton
-import com.imposter.play.ui.components.PrimaryButton
 import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorBorder2
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.ColorText
+import com.imposter.play.ui.components.GhostButton
+import com.imposter.play.ui.components.GridBackground
+import com.imposter.play.ui.components.MonoBadge
+import com.imposter.play.ui.components.PickerStepButton
+import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_home_badge
 import imposter.sharedui.generated.resources.nav_home_customize
@@ -82,21 +83,21 @@ fun HomeScreen(
             Spacer(Modifier.height(20.dp))
             Text(
                 text = stringResource(Res.string.nav_home_title),
-                style = androidx.compose.material3.MaterialTheme.typography.displayLarge,
+                style = MaterialTheme.typography.displayLarge,
                 color = ColorText,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(Res.string.nav_home_subtitle),
-                style = androidx.compose.material3.MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmall,
                 color = ColorText.copy(alpha = 0.9f),
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(36.dp))
             Text(
                 text = stringResource(Res.string.nav_home_players),
-                style = androidx.compose.material3.MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmall,
                 color = ColorMuted,
             )
             Spacer(Modifier.height(10.dp))
@@ -119,7 +120,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         text = playerCount.toString(),
-                        style = androidx.compose.material3.MaterialTheme.typography.displayMedium,
+                        style = MaterialTheme.typography.displayMedium,
                         color = ColorText,
                         textAlign = TextAlign.Center,
                     )

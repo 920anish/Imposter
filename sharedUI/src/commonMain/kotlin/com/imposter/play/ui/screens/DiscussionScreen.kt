@@ -20,9 +20,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,16 +33,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.imposter.play.engine.GameSession
 import com.imposter.play.engine.GameState
-import com.imposter.play.ui.components.DangerButton
-import com.imposter.play.ui.components.GhostButton
-import com.imposter.play.ui.components.GridBackground
-import com.imposter.play.ui.components.MonoBadge
 import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorDim
 import com.imposter.play.theme.ColorImp
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.ColorText
+import com.imposter.play.ui.components.DangerButton
+import com.imposter.play.ui.components.GhostButton
+import com.imposter.play.ui.components.GridBackground
+import com.imposter.play.ui.components.MonoBadge
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_discussion_pause
 import imposter.sharedui.generated.resources.nav_discussion_players
@@ -60,22 +60,20 @@ fun DiscussionScreen(
     modifier: Modifier = Modifier,
 ) {
     val discussion = session.state as? GameState.Discussion
-    // Remember timer values to prevent flash when state changes to Voting
     val lastSecondsLeft = remember { mutableIntStateOf(discussion?.secondsLeft ?: 180) }
     val lastIsRunning = remember { mutableStateOf(discussion?.isRunning ?: false) }
-    
-    // Update remembered values only when we have valid discussion state
+
     if (discussion != null) {
         lastSecondsLeft.intValue = discussion.secondsLeft
         lastIsRunning.value = discussion.isRunning
     }
-    
+
     val secondsLeft = lastSecondsLeft.intValue
     val isRunning = lastIsRunning.value
     val minutes = secondsLeft / 60
     val seconds = secondsLeft % 60
     val scrollState = rememberScrollState()
-    
+
     val urgent = secondsLeft < 30
     val timerColor = animateColorAsState(
         targetValue = if (urgent) ColorImp else ColorText,
@@ -94,8 +92,11 @@ fun DiscussionScreen(
     )
 
     Box(modifier = modifier.fillMaxSize()) {
-        GridBackground(tint = if (urgent) ColorImp else ColorBorder, opacity = if (urgent) 0.1f else 0.32f)
-        
+        GridBackground(
+            tint = if (urgent) ColorImp else ColorBorder,
+            opacity = if (urgent) 0.1f else 0.32f
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -106,12 +107,12 @@ fun DiscussionScreen(
         ) {
             // Top spacer for centering
             Spacer(Modifier.weight(1f))
-            
+
             MonoBadge(text = stringResource(Res.string.nav_discussion_title))
             Spacer(Modifier.height(20.dp))
             Text(
                 text = "$minutes:${seconds.toString().padStart(2, '0')}",
-                style = androidx.compose.material3.MaterialTheme.typography.displayLarge,
+                style = MaterialTheme.typography.displayLarge,
                 color = timerColor.value,
                 modifier = Modifier.alpha(if (urgent) urgentAlpha.value else 1f),
                 textAlign = TextAlign.Center,
@@ -119,12 +120,14 @@ fun DiscussionScreen(
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(Res.string.nav_discussion_subtitle),
-                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall,
                 color = ColorMuted,
             )
             Spacer(Modifier.height(16.dp))
             GhostButton(
-                text = if (isRunning) stringResource(Res.string.nav_discussion_pause) else stringResource(Res.string.nav_discussion_resume),
+                text = if (isRunning) stringResource(Res.string.nav_discussion_pause) else stringResource(
+                    Res.string.nav_discussion_resume
+                ),
                 onClick = onToggleTimer,
             )
             Spacer(Modifier.height(24.dp))
@@ -137,11 +140,14 @@ fun DiscussionScreen(
                 Column {
                     Text(
                         text = stringResource(Res.string.nav_discussion_players),
-                        style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall,
                         color = ColorDim,
                     )
                     Spacer(Modifier.height(16.dp))
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         session.normalizedPlayerNames.forEach { player ->
                             Box(
                                 modifier = Modifier
@@ -149,7 +155,11 @@ fun DiscussionScreen(
                                     .border(1.dp, ColorBorder)
                                     .padding(horizontal = 14.dp, vertical = 6.dp),
                             ) {
-                                Text(text = player, color = ColorText, style = androidx.compose.material3.MaterialTheme.typography.bodySmall)
+                                Text(
+                                    text = player,
+                                    color = ColorText,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
                             }
                         }
                     }
@@ -160,7 +170,7 @@ fun DiscussionScreen(
                 text = stringResource(Res.string.nav_discussion_vote_now),
                 onClick = onVoteNow,
             )
-            
+
             // Bottom spacer for centering
             Spacer(Modifier.weight(1f))
         }

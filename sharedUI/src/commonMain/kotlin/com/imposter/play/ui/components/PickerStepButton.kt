@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,7 +33,7 @@ fun PickerStepButton(
             .border(1.5.dp, ColorBorder2)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(top = 8.dp),
-        style = androidx.compose.material3.MaterialTheme.typography.displaySmall,
+        style = MaterialTheme.typography.displaySmall,
         color = if (enabled) ColorText else ColorDim,
         textAlign = TextAlign.Center,
     )

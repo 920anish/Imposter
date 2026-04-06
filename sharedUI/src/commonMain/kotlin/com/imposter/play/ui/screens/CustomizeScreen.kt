@@ -14,8 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.imposter.play.engine.GameConfig
-import com.imposter.play.ui.components.GridBackground
-import com.imposter.play.ui.components.PrimaryButton
 import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorBorder2
 import com.imposter.play.theme.ColorCrew
@@ -40,10 +39,11 @@ import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.ColorText
 import com.imposter.play.theme.ColorWarn
 import com.imposter.play.theme.ColorWin
+import com.imposter.play.ui.components.GridBackground
+import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_customize_add_player
 import imposter.sharedui.generated.resources.nav_customize_category
-import imposter.sharedui.generated.resources.nav_customize_close
 import imposter.sharedui.generated.resources.nav_customize_difficulty
 import imposter.sharedui.generated.resources.nav_customize_easy
 import imposter.sharedui.generated.resources.nav_customize_hard
@@ -76,12 +76,29 @@ fun CustomizeScreen(
     }
     var tab by remember { mutableStateOf("players") }
     val categoryKeys = remember {
-        listOf("ANIMALS", "FOOD", "CITIES", "MOVIES", "SPORTS", "SCIENCE", "TECH", "MUSIC", "GEOGRAPHY")
+        listOf(
+            "ANIMALS",
+            "FOOD",
+            "CITIES",
+            "MOVIES",
+            "SPORTS",
+            "SCIENCE",
+            "TECH",
+            "MUSIC",
+            "GEOGRAPHY"
+        )
     }
     var categoryIndex by remember(config.category) {
         mutableIntStateOf(categoryKeys.indexOf(config.category.uppercase()).coerceAtLeast(-1))
     }
-    var difficulty by remember(config.difficulty) { mutableIntStateOf(config.difficulty.coerceIn(0, 2)) }
+    var difficulty by remember(config.difficulty) {
+        mutableIntStateOf(
+            config.difficulty.coerceIn(
+                0,
+                2
+            )
+        )
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
@@ -99,7 +116,11 @@ fun CustomizeScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
-                    Text(text = stringResource(Res.string.nav_customize_title), color = ColorText, style = androidx.compose.material3.MaterialTheme.typography.displayMedium)
+                    Text(
+                        text = stringResource(Res.string.nav_customize_title),
+                        color = ColorText,
+                        style = MaterialTheme.typography.displayMedium
+                    )
                 }
                 Box(
                     modifier = Modifier
@@ -113,7 +134,10 @@ fun CustomizeScreen(
             }
             Spacer(Modifier.height(18.dp))
             // Fixed tabs
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 TabButton(
                     text = stringResource(Res.string.nav_customize_tab_players),
                     active = tab == "players",
@@ -126,7 +150,7 @@ fun CustomizeScreen(
                 ) { tab = "category" }
             }
             Spacer(Modifier.height(16.dp))
-            
+
             // Scrollable content area
             Column(
                 modifier = Modifier
@@ -184,7 +208,7 @@ fun CustomizeScreen(
                     )
                 }
             }
-            
+
             // Fixed bottom button
             Spacer(Modifier.height(16.dp))
             PrimaryButton(
@@ -213,14 +237,21 @@ private fun PlayersTabContent(
 ) {
     Text(
         text = stringResource(Res.string.nav_customize_players_hint),
-        style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+        style = MaterialTheme.typography.labelMedium,
         color = ColorMuted,
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(10.dp))
     players.forEachIndexed { index, name ->
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(44.dp).border(1.dp, ColorBorder), contentAlignment = Alignment.Center) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                Modifier.size(44.dp).border(1.dp, ColorBorder),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(text = "${index + 1}".padStart(2, '0'), color = ColorMuted)
             }
             Box(
@@ -236,12 +267,18 @@ private fun PlayersTabContent(
                     value = name,
                     onValueChange = { onPlayerNameChange(index, it) },
                     singleLine = true,
-                    textStyle = androidx.compose.material3.MaterialTheme.typography.bodyMedium.copy(color = ColorText),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        color = ColorText
+                    ),
                     cursorBrush = androidx.compose.ui.graphics.SolidColor(ColorCrew),
                     modifier = Modifier.fillMaxWidth(),
                     decorationBox = { innerTextField ->
                         if (name.isBlank()) {
-                            Text("Player ${index + 1}", color = ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium)
+                            Text(
+                                "Player ${index + 1}",
+                                color = ColorMuted,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                         innerTextField()
                     },
@@ -249,7 +286,8 @@ private fun PlayersTabContent(
             }
             if (players.size > 3) {
                 Box(
-                    Modifier.size(44.dp).border(1.dp, ColorBorder).clickable { onRemovePlayer(index) },
+                    Modifier.size(44.dp).border(1.dp, ColorBorder)
+                        .clickable { onRemovePlayer(index) },
                     contentAlignment = Alignment.Center,
                 ) { Text("×", color = ColorMuted) }
             }
@@ -258,13 +296,14 @@ private fun PlayersTabContent(
     }
     if (players.size < 10) {
         Box(
-            Modifier.fillMaxWidth().height(44.dp).border(1.dp, ColorBorder).clickable { onAddPlayer() },
+            Modifier.fillMaxWidth().height(44.dp).border(1.dp, ColorBorder)
+                .clickable { onAddPlayer() },
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = stringResource(Res.string.nav_customize_add_player),
                 color = ColorMuted,
-                style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelMedium,
             )
         }
     }
@@ -283,7 +322,7 @@ private fun CategoryTabContent(
     Text(
         text = stringResource(Res.string.nav_customize_difficulty),
         color = ColorMuted,
-        style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+        style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
@@ -296,12 +335,19 @@ private fun CategoryTabContent(
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
         labels.forEachIndexed { index, label ->
             Box(
-                Modifier.weight(1f).height(36.dp).border(1.dp, if (difficulty == index) colors[index].copy(alpha = 0.6f) else ColorBorder).background(
+                Modifier.weight(1f).height(36.dp).border(
+                    1.dp,
+                    if (difficulty == index) colors[index].copy(alpha = 0.6f) else ColorBorder
+                ).background(
                     if (difficulty == index) colors[index].copy(alpha = 0.12f) else Color.Transparent
                 ).clickable { onDifficultySelect(index) },
                 contentAlignment = Alignment.Center,
             ) {
-                Text(text = label, color = if (difficulty == index) colors[index] else ColorMuted, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
+                Text(
+                    text = label,
+                    color = if (difficulty == index) colors[index] else ColorMuted,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }
@@ -309,14 +355,17 @@ private fun CategoryTabContent(
     Text(
         text = stringResource(Res.string.nav_customize_imposter_hint),
         color = ColorMuted,
-        style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+        style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
         Box(
             Modifier.weight(1f).height(36.dp)
-                .border(1.dp, if (!imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                .border(
+                    1.dp,
+                    if (!imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
+                )
                 .background(if (!imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
                 .clickable { onHintToggle(false) },
             contentAlignment = Alignment.Center,
@@ -324,12 +373,15 @@ private fun CategoryTabContent(
             Text(
                 text = stringResource(Res.string.nav_customize_hint_off),
                 color = if (!imposterHintEnabled) ColorCrew else ColorMuted,
-                style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         Box(
             Modifier.weight(1f).height(36.dp)
-                .border(1.dp, if (imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                .border(
+                    1.dp,
+                    if (imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
+                )
                 .background(if (imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
                 .clickable { onHintToggle(true) },
             contentAlignment = Alignment.Center,
@@ -337,7 +389,7 @@ private fun CategoryTabContent(
             Text(
                 text = stringResource(Res.string.nav_customize_hint_on),
                 color = if (imposterHintEnabled) ColorCrew else ColorMuted,
-                style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
     }
@@ -345,17 +397,21 @@ private fun CategoryTabContent(
     Text(
         text = stringResource(Res.string.nav_customize_category),
         color = ColorMuted,
-        style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+        style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     Box(
-        Modifier.fillMaxWidth().height(44.dp).border(1.dp, if (categoryIndex == -1) ColorCrew.copy(alpha = 0.5f) else ColorBorder)
+        Modifier.fillMaxWidth().height(44.dp)
+            .border(1.dp, if (categoryIndex == -1) ColorCrew.copy(alpha = 0.5f) else ColorBorder)
             .background(if (categoryIndex == -1) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
             .clickable { onCategorySelect(-1, "RANDOM") },
         contentAlignment = Alignment.Center,
     ) {
-        Text(stringResource(Res.string.nav_customize_random), color = if (categoryIndex == -1) ColorCrew else ColorMuted)
+        Text(
+            stringResource(Res.string.nav_customize_random),
+            color = if (categoryIndex == -1) ColorCrew else ColorMuted
+        )
     }
     Spacer(Modifier.height(10.dp))
     categoryKeys.chunked(3).forEachIndexed { rowIndex, rowCategories ->
@@ -370,7 +426,10 @@ private fun CategoryTabContent(
                         .weight(1f)
                         .height(84.dp)
                         .background(if (categoryIndex == index) ColorCrew.copy(alpha = 0.12f) else ColorSurface)
-                        .border(1.dp, if (categoryIndex == index) ColorCrew.copy(alpha = 0.55f) else ColorBorder)
+                        .border(
+                            1.dp,
+                            if (categoryIndex == index) ColorCrew.copy(alpha = 0.55f) else ColorBorder
+                        )
                         .clickable { onCategorySelect(index, category) }
                         .padding(8.dp),
                     contentAlignment = Alignment.Center,
@@ -378,7 +437,7 @@ private fun CategoryTabContent(
                     Text(
                         text = category.lowercase().replaceFirstChar { it.uppercase() },
                         color = if (categoryIndex == index) ColorCrew else ColorText,
-                        style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelMedium,
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -405,7 +464,7 @@ private fun TabButton(
     ) {
         Text(
             text = text,
-            style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall,
             color = if (active) ColorCrew else ColorMuted,
         )
     }

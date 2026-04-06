@@ -1,8 +1,4 @@
 <resources>
-    <string name="preview_badge">CLASSIFIED · SOCIAL DEDUCTION</string>
-    <string name="preview_primary">PLAY NOW</string>
-    <string name="preview_danger">VOTE NOW</string>
-    <string name="preview_ghost">CUSTOMIZE GAME</string>
     <string name="nav_home_badge">CLASSIFIED · SOCIAL DEDUCTION</string>
     <string name="nav_home_title">IMPOSTER</string>
     <string name="nav_home_subtitle">one · hides · among · you</string>

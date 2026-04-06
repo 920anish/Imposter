@@ -1,8 +1,7 @@
 package com.imposter.play.data
 
 import io.github.xxfast.kstore.KStore
-import io.github.xxfast.kstore.file.storeOf
-import kotlinx.coroutines.flow.Flow
+import io.github.xxfast.kstore.storeOf
 import kotlinx.io.files.Path
 
 class GamePrefsStore(
@@ -14,9 +13,6 @@ class GamePrefsStore(
             default = GamePrefs(),
         )
     )
-
-    val updates: Flow<GamePrefs?>
-        get() = store.updates
 
     suspend fun load(): GamePrefs = store.get() ?: GamePrefs()
 

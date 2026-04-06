@@ -14,10 +14,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,9 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.imposter.play.engine.GameSession
-import com.imposter.play.ui.components.DangerButton
-import com.imposter.play.ui.components.GridBackground
-import com.imposter.play.ui.components.MonoBadge
 import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorDim
 import com.imposter.play.theme.ColorImp
@@ -35,6 +33,9 @@ import com.imposter.play.theme.ColorImpDim
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.ColorText
+import com.imposter.play.ui.components.DangerButton
+import com.imposter.play.ui.components.GridBackground
+import com.imposter.play.ui.components.MonoBadge
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_vote_cast
 import imposter.sharedui.generated.resources.nav_vote_count
@@ -56,7 +57,7 @@ fun VoteScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
-        
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,23 +68,23 @@ fun VoteScreen(
         ) {
             // Top spacer for centering when content fits
             Spacer(Modifier.weight(1f))
-            
+
             MonoBadge(text = stringResource(Res.string.nav_vote_title))
             Spacer(Modifier.height(12.dp))
             Text(
                 text = stringResource(Res.string.nav_vote_headline),
-                style = androidx.compose.material3.MaterialTheme.typography.displayMedium,
+                style = MaterialTheme.typography.displayMedium,
                 color = ColorText,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(12.dp))
             Text(
                 text = "$totalVotes ${stringResource(Res.string.nav_vote_cast)}",
-                style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelMedium,
                 color = ColorMuted,
             )
             Spacer(Modifier.height(24.dp))
-            
+
             // Player vote rows
             session.normalizedPlayerNames.forEachIndexed { index, player ->
                 val voteCount = session.votes.firstOrNull { it.playerIndex == index }?.votes ?: 0
@@ -111,7 +112,10 @@ fun VoteScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 )
                 {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
                         if (voteCount > 0) {
                             Box(
                                 Modifier
@@ -123,29 +127,32 @@ fun VoteScreen(
                         Text(
                             text = player,
                             color = if (isHot) ColorImp else ColorText,
-                            style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                     }
                     Text(
-                        text = if (voteCount > 0) stringResource(Res.string.nav_vote_count, voteCount.toString()) else "—",
+                        text = if (voteCount > 0) stringResource(
+                            Res.string.nav_vote_count,
+                            voteCount.toString()
+                        ) else "-",
                         color = when {
                             isHot -> ColorImp
                             voteCount > 0 -> ColorMuted
                             else -> ColorDim
                         },
-                        style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelMedium,
                     )
                 }
                 Spacer(Modifier.height(8.dp))
             }
-            
+
             Spacer(Modifier.height(16.dp))
             DangerButton(
                 text = stringResource(Res.string.nav_vote_reveal),
                 onClick = onReveal,
                 enabled = totalVotes > 0,
             )
-            
+
             // Bottom spacer for centering when content fits
             Spacer(Modifier.weight(1f))
         }

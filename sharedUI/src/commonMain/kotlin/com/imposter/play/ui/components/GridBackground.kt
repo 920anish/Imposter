@@ -57,7 +57,3 @@ fun GridBackground(
     )
 }
 
-@Composable
-private fun GridBackgroundPreview() {
-    GridBackground()
-}
