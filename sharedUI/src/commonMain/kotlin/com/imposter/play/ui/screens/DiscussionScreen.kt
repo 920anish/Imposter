@@ -16,9 +16,16 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -53,10 +60,22 @@ fun DiscussionScreen(
     modifier: Modifier = Modifier,
 ) {
     val discussion = session.state as? GameState.Discussion
-    val secondsLeft = discussion?.secondsLeft ?: 0
-    val isRunning = discussion?.isRunning == true
+    // Remember timer values to prevent flash when state changes to Voting
+    val lastSecondsLeft = remember { mutableIntStateOf(discussion?.secondsLeft ?: 180) }
+    val lastIsRunning = remember { mutableStateOf(discussion?.isRunning ?: false) }
+    
+    // Update remembered values only when we have valid discussion state
+    if (discussion != null) {
+        lastSecondsLeft.intValue = discussion.secondsLeft
+        lastIsRunning.value = discussion.isRunning
+    }
+    
+    val secondsLeft = lastSecondsLeft.intValue
+    val isRunning = lastIsRunning.value
     val minutes = secondsLeft / 60
     val seconds = secondsLeft % 60
+    val scrollState = rememberScrollState()
+    
     val urgent = secondsLeft < 30
     val timerColor = animateColorAsState(
         targetValue = if (urgent) ColorImp else ColorText,
@@ -74,15 +93,22 @@ fun DiscussionScreen(
         label = "discussionUrgentAlpha",
     )
 
-    androidx.compose.foundation.layout.Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = if (urgent) ColorImp else ColorBorder, opacity = if (urgent) 0.1f else 0.32f)
+        
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            // Top spacer for centering
+            Spacer(Modifier.weight(1f))
+            
             MonoBadge(text = stringResource(Res.string.nav_discussion_title))
-            Spacer(Modifier.padding(10.dp))
+            Spacer(Modifier.height(20.dp))
             Text(
                 text = "$minutes:${seconds.toString().padStart(2, '0')}",
                 style = androidx.compose.material3.MaterialTheme.typography.displayLarge,
@@ -90,18 +116,18 @@ fun DiscussionScreen(
                 modifier = Modifier.alpha(if (urgent) urgentAlpha.value else 1f),
                 textAlign = TextAlign.Center,
             )
-            Spacer(Modifier.padding(8.dp))
+            Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(Res.string.nav_discussion_subtitle),
                 style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
                 color = ColorMuted,
             )
-            Spacer(Modifier.padding(8.dp))
+            Spacer(Modifier.height(16.dp))
             GhostButton(
                 text = if (isRunning) stringResource(Res.string.nav_discussion_pause) else stringResource(Res.string.nav_discussion_resume),
                 onClick = onToggleTimer,
             )
-            Spacer(Modifier.padding(18.dp))
+            Spacer(Modifier.height(24.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,7 +140,7 @@ fun DiscussionScreen(
                         style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
                         color = ColorDim,
                     )
-                    Spacer(Modifier.padding(8.dp))
+                    Spacer(Modifier.height(16.dp))
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         session.normalizedPlayerNames.forEach { player ->
                             Box(
@@ -129,11 +155,14 @@ fun DiscussionScreen(
                     }
                 }
             }
-            Spacer(Modifier.padding(12.dp))
+            Spacer(Modifier.height(24.dp))
             DangerButton(
                 text = stringResource(Res.string.nav_discussion_vote_now),
                 onClick = onVoteNow,
             )
+            
+            // Bottom spacer for centering
+            Spacer(Modifier.weight(1f))
         }
     }
 }

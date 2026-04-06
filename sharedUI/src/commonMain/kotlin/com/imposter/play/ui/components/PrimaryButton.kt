@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +29,8 @@ import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorText
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.preview_primary
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -35,6 +39,7 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    leadingIconRes: DrawableResource? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
@@ -61,14 +66,27 @@ fun PrimaryButton(
             )
             .padding(vertical = 14.dp),
     ) {
-        Text(
-            text = text,
-            color = if (enabled) ColorText else ColorMuted,
-            style = androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(
-                fontFamily = BebasNeue,
-            ),
+        Row(
             modifier = Modifier.align(Alignment.Center),
-        )
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (leadingIconRes != null) {
+                Icon(
+                    painter = painterResource(leadingIconRes),
+                    contentDescription = null,
+                    tint = if (enabled) ColorText else ColorMuted,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            Text(
+                text = text,
+                color = if (enabled) ColorText else ColorMuted,
+                style = androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(
+                    fontFamily = BebasNeue,
+                ),
+            )
+        }
     }
 }
 

@@ -50,8 +50,8 @@
     <string name="nav_discussion_title">DISCUSSION PHASE</string>
     <string name="nav_discussion_vote_now">VOTE NOW →</string>
     <string name="nav_discussion_toggle">PAUSE / RESUME</string>
-    <string name="nav_discussion_pause">⏸ PAUSE</string>
-    <string name="nav_discussion_resume">▶ RESUME</string>
+    <string name="nav_discussion_pause">PAUSE</string>
+    <string name="nav_discussion_resume">RESUME</string>
     <string name="nav_discussion_subtitle">discuss · debate · deduce</string>
     <string name="nav_discussion_players">PLAYERS IN GAME</string>
     <string name="nav_vote_title">FINAL VOTE</string>

@@ -242,12 +242,3 @@ class GameViewModel(
         }
     }
 }
-
-sealed class PlayerRole {
-    data class Crew(val word: String) : PlayerRole()
-    data class Imposter(
-        val hint: String,
-        val hintEnabled: Boolean,
-    ) : PlayerRole()
-    data object Unknown : PlayerRole()
-}

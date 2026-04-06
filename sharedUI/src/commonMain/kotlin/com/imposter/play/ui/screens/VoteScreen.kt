@@ -16,11 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.imposter.play.engine.GameSession
@@ -51,29 +52,39 @@ fun VoteScreen(
 ) {
     val totalVotes = session.votes.sumOf { it.votes }
     val maxVotes = session.votes.maxOfOrNull { it.votes } ?: 0
+    val scrollState = rememberScrollState()
 
-    androidx.compose.foundation.layout.Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
+        
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            // Top spacer for centering when content fits
+            Spacer(Modifier.weight(1f))
+            
             MonoBadge(text = stringResource(Res.string.nav_vote_title))
-            Spacer(Modifier.padding(6.dp))
+            Spacer(Modifier.height(12.dp))
             Text(
                 text = stringResource(Res.string.nav_vote_headline),
                 style = androidx.compose.material3.MaterialTheme.typography.displayMedium,
                 color = ColorText,
                 textAlign = TextAlign.Center,
             )
-            Spacer(Modifier.padding(6.dp))
+            Spacer(Modifier.height(12.dp))
             Text(
                 text = "$totalVotes ${stringResource(Res.string.nav_vote_cast)}",
                 style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
                 color = ColorMuted,
             )
-            Spacer(Modifier.padding(12.dp))
+            Spacer(Modifier.height(24.dp))
+            
+            // Player vote rows
             session.normalizedPlayerNames.forEachIndexed { index, player ->
                 val voteCount = session.votes.firstOrNull { it.playerIndex == index }?.votes ?: 0
                 val isHot = voteCount > 0 && voteCount == maxVotes
@@ -125,13 +136,18 @@ fun VoteScreen(
                         style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
                     )
                 }
-                Spacer(Modifier.padding(4.dp))
+                Spacer(Modifier.height(8.dp))
             }
+            
+            Spacer(Modifier.height(16.dp))
             DangerButton(
                 text = stringResource(Res.string.nav_vote_reveal),
                 onClick = onReveal,
                 enabled = totalVotes > 0,
             )
+            
+            // Bottom spacer for centering when content fits
+            Spacer(Modifier.weight(1f))
         }
     }
 }

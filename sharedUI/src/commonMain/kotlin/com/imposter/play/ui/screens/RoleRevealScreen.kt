@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -66,46 +68,52 @@ fun RoleRevealScreen(
     val revealState = session.state as? GameState.RoleReveal
     val isCardRevealed = revealState?.isRevealed == true
     val playerName = session.normalizedPlayerNames.getOrNull(revealState?.playerIndex ?: 0) ?: "Player 1"
+    val scrollState = rememberScrollState()
 
-    androidx.compose.foundation.layout.Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
+        
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth().weight(1f),
-            ) {
-                MonoBadge(
-                    text = "${(revealState?.playerIndex ?: 0) + 1} / ${session.config.playerCount}",
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(Modifier.height(16.dp))
-                AnimatedContent(
-                    targetState = Pair(isCardRevealed, role),
-                    transitionSpec = {
-                        slideInVertically(animationSpec = spring()) + fadeIn() togetherWith fadeOut()
-                    },
-                    label = "roleRevealCard",
-                ) { state ->
-                    if (!state.first) {
-                        RoleRevealCover(
-                            playerName = playerName,
-                        )
-                    } else {
-                        RoleCard(role = state.second)
-                    }
+            // Top spacer for centering when content fits
+            Spacer(Modifier.weight(1f))
+            
+            MonoBadge(
+                text = "${(revealState?.playerIndex ?: 0) + 1} / ${session.config.playerCount}",
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(16.dp))
+            AnimatedContent(
+                targetState = Pair(isCardRevealed, role),
+                transitionSpec = {
+                    slideInVertically(animationSpec = spring()) + fadeIn() togetherWith fadeOut()
+                },
+                label = "roleRevealCard",
+            ) { state ->
+                if (!state.first) {
+                    RoleRevealCover(
+                        playerName = playerName,
+                    )
+                } else {
+                    RoleCard(role = state.second)
                 }
             }
+            
             Spacer(Modifier.height(32.dp))
             PrimaryButton(
                 text = if (isCardRevealed) stringResource(Res.string.nav_role_done) else stringResource(Res.string.nav_role_reveal),
                 onClick = if (isCardRevealed) onNext else onReveal,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(Modifier.height(48.dp))
+            
+            // Bottom spacer for centering when content fits
+            Spacer(Modifier.weight(1f))
         }
     }
 }

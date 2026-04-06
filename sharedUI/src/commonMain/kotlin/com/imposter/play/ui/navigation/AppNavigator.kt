@@ -84,6 +84,7 @@ fun AppNavigator(
                     session = session,
                     onToggleTimer = { viewModel.onIntent(GameIntent.ToggleTimer) },
                     onVoteNow = {
+                        // Stop timer and start voting
                         viewModel.onIntent(GameIntent.StartVoting)
                         backStack.add(VoteRoute)
                     },

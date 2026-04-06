@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -64,12 +66,19 @@ fun ResultScreen(
     val hintEnabled = session.config.imposterHintEnabled
     val hint = if (hintEnabled) session.currentWord.hint.ifBlank { "???" } else null
 
+    val scrollState = rememberScrollState()
+    
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = accent, opacity = 0.08f)
         Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(top = 56.dp, bottom = 32.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(horizontal = 24.dp)
+                .padding(top = 48.dp, bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Spacer(Modifier.weight(1f))
             MonoBadge(
                 text = if (crewWon) stringResource(Res.string.nav_result_caught) else stringResource(Res.string.nav_result_escaped),
                 color = accent,

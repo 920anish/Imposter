@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,15 +60,21 @@ fun HomeScreen(
             )
         )
     }
-    androidx.compose.foundation.layout.Box(
+    Box(
         modifier = modifier.fillMaxSize(),
     ) {
         GridBackground(tint = ColorBorder, opacity = 0.5f)
+        val scrollState = rememberScrollState()
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            // Top spacer for centering
+            Spacer(Modifier.weight(1f))
             MonoBadge(
                 text = stringResource(Res.string.nav_home_badge),
                 modifier = Modifier.fillMaxWidth(),
@@ -138,6 +146,8 @@ fun HomeScreen(
                 onClick = onCustomize,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
             )
+            // Bottom spacer for centering
+            Spacer(Modifier.weight(1f))
         }
     }
 }
