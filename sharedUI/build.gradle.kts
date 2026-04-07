@@ -8,13 +8,22 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.buildConfig)
+    alias(libs.plugins.room)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
-    androidTarget {
-        //We need the deprecated target to have working previews
-        compilerOptions { jvmTarget = JvmTarget.JVM_17 }
+    android {
+        namespace = "com.imposter.play"
+        compileSdk = 36
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
+
+        androidResources {
+            enable = true
+        }
     }
 
     iosArm64()
@@ -35,10 +44,9 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.coil)
-            implementation(libs.coil.network.ktor)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.kstore)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
 
         commonTest.dependencies {
@@ -49,12 +57,10 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.kstore.file)
             api(libs.androidx.core.splashscreen)
         }
 
         iosMain.dependencies {
-            implementation(libs.kstore.file)
         }
 
     }
@@ -72,25 +78,17 @@ kotlin {
         }
 }
 
-dependencies {
-    debugImplementation(libs.compose.ui.tooling)
-}
-android {
-    namespace = "com.imposter.play"
-    compileSdk = 36
-    defaultConfig {
-        minSdk = 23
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
 
-buildConfig {
-    // BuildConfig configuration here.
-    // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
+room3 {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
+    "androidRuntimeClasspath"(libs.compose.ui.tooling)
+    with(libs.room.compiler) {
+        add("kspCommonMainMetadata", this)
+        add("kspAndroid", this)
+        add("kspIosArm64", this)
+        add("kspIosSimulatorArm64", this)
+    }
 }
