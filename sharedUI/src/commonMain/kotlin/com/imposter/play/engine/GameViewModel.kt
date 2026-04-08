@@ -2,26 +2,31 @@ package com.imposter.play.engine
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imposter.play.data.GamePrefs
-import com.imposter.play.data.GamePrefsStore
-import com.imposter.play.data.WordDeck
-import com.imposter.play.data.WordDictionary
+import com.imposter.play.data.Difficulty
+import com.imposter.play.data.Word
+import com.imposter.play.data.local.AppPreferences
+import com.imposter.play.data.local.CATEGORY_ALL
+import com.imposter.play.data.local.PlayedHistoryDao
+import com.imposter.play.data.local.WordDao
+import com.imposter.play.data.entities.PlayedHistoryEntity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class GameViewModel(
-    private val prefsStore: GamePrefsStore,
+    private val appPreferences: AppPreferences,
+    private val wordDao: WordDao,
+    private val playedHistoryDao: PlayedHistoryDao,
 ) : ViewModel() {
 
     private val _session = MutableStateFlow(GameSession())
     val session: StateFlow<GameSession> = _session.asStateFlow()
 
-    private var wordDeck: WordDeck? = null
     private var discussionTimerJob: Job? = null
 
     fun onIntent(intent: GameIntent) {
@@ -40,14 +45,14 @@ class GameViewModel(
 
     fun loadPrefs() {
         viewModelScope.launch {
-            val prefs = prefsStore.load()
+            val settings = appPreferences.settings.first()
             _session.value = _session.value.copy(
                 config = GameConfig(
-                    playerCount = prefs.playerCount.coerceIn(3, 10),
-                    playerNames = prefs.playerNames,
-                    category = prefs.lastCategory,
-                    difficulty = prefs.lastDifficulty.coerceIn(0, 2),
-                    imposterHintEnabled = prefs.imposterHintEnabled,
+                    playerCount = settings.playerCount.coerceIn(3, 10),
+                    playerNames = emptyList(), // Names now come from PlayerDao
+                    category = settings.selectedCategoryIds.firstOrNull() ?: CATEGORY_ALL,
+                    difficulty = settings.difficulty.level,
+                    imposterHintEnabled = settings.isHintEnabled,
                 )
             )
         }
@@ -56,49 +61,63 @@ class GameViewModel(
     private fun updateSetupConfig(config: GameConfig) {
         val normalized = config.copy(
             playerCount = config.playerCount.coerceIn(3, 10),
-            category = normalizeCategory(config.category),
             difficulty = config.difficulty.coerceIn(0, 2),
         )
         _session.value = _session.value.copy(
             config = normalized
         )
         viewModelScope.launch {
-            prefsStore.save(
-                GamePrefs(
-                    playerCount = normalized.playerCount,
-                    playerNames = normalized.playerNames,
-                    lastCategory = normalized.category,
-                    lastDifficulty = normalized.difficulty,
-                    imposterHintEnabled = normalized.imposterHintEnabled,
-                )
-            )
+            appPreferences.setPlayerCount(normalized.playerCount)
+            appPreferences.setDifficulty(Difficulty.fromInt(normalized.difficulty))
+            appPreferences.setHintsEnabled(normalized.imposterHintEnabled)
         }
     }
 
     private fun startGame(config: GameConfig) {
         val normalizedConfig = config.copy(
             playerCount = config.playerCount.coerceIn(3, 10),
-            category = normalizeCategory(config.category),
             difficulty = config.difficulty.coerceIn(0, 2),
         )
-        wordDeck = WordDeck(
-            category = normalizedConfig.category,
-            difficulty = normalizedConfig.difficulty,
-        )
 
-        val selectedWord = wordDeck!!.nextWord()
-        val imposterIndex = Random.nextInt(until = normalizedConfig.playerCount)
-        discussionTimerJob?.cancel()
-        _session.value = GameSession(
-            config = normalizedConfig,
-            state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
-            imposterIndex = imposterIndex,
-            currentWord = selectedWord,
-            votes = (0 until normalizedConfig.playerCount).map { VoteCount(it, 0) },
-            revealedPlayers = emptySet(),
-        )
+        viewModelScope.launch {
+            val settings = appPreferences.settings.first()
+            val excludeIds = playedHistoryDao.getRecentWordIds().toSet()
+            
+            // Get random word from database
+            val wordEntity = if (CATEGORY_ALL in settings.selectedCategoryIds) {
+                wordDao.getRandomWordFromAll(excludeIds, normalizedConfig.difficulty)
+            } else {
+                wordDao.getRandomWord(settings.selectedCategoryIds, excludeIds, normalizedConfig.difficulty)
+            }
 
-        persistStartPreferences(normalizedConfig)
+            // Fallback to empty word if database is empty (will be fixed when DB is prepopulated)
+            val selectedWord = Word(
+                real = wordEntity?.text ?: "No words available",
+                hint = wordEntity?.hint ?: "Check database",
+            )
+
+            // Mark word as played
+            wordEntity?.let {
+                playedHistoryDao.markPlayed(
+                    PlayedHistoryEntity(wordId = it.id, timestamp = kotlin.time.Clock.System.now().toEpochMilliseconds())
+                )
+                playedHistoryDao.pruneHistory()
+            }
+
+            val imposterIndex = Random.nextInt(until = normalizedConfig.playerCount)
+            discussionTimerJob?.cancel()
+            
+            _session.value = GameSession(
+                config = normalizedConfig,
+                state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
+                imposterIndex = imposterIndex,
+                currentWord = selectedWord,
+                votes = (0 until normalizedConfig.playerCount).map { VoteCount(it, 0) },
+                revealedPlayers = emptySet(),
+            )
+
+            persistStartPreferences(normalizedConfig)
+        }
     }
 
     private fun revealCard() {
@@ -208,15 +227,9 @@ class GameViewModel(
 
     private fun persistStartPreferences(config: GameConfig) {
         viewModelScope.launch {
-            prefsStore.save(
-                GamePrefs(
-                    playerCount = config.playerCount,
-                    playerNames = config.playerNames,
-                    lastCategory = config.category,
-                    lastDifficulty = config.difficulty,
-                    imposterHintEnabled = config.imposterHintEnabled,
-                )
-            )
+            appPreferences.setPlayerCount(config.playerCount)
+            appPreferences.setDifficulty(Difficulty.fromInt(config.difficulty))
+            appPreferences.setHintsEnabled(config.imposterHintEnabled)
         }
     }
 
@@ -230,15 +243,6 @@ class GameViewModel(
             )
         } else {
             PlayerRole.Crew(word = current.currentWord.real)
-        }
-    }
-
-    private fun normalizeCategory(category: String): String {
-        val normalized = category.trim().uppercase()
-        return if (normalized == WordDictionary.CATEGORY_RANDOM || normalized in WordDictionary.words.keys) {
-            normalized
-        } else {
-            WordDictionary.CATEGORY_RANDOM
         }
     }
 }

@@ -87,7 +87,8 @@ room3 {
 dependencies {
     "androidRuntimeClasspath"(libs.compose.ui.tooling)
     with(libs.room.compiler) {
-        add("kspCommonMainMetadata", this)
+        // Note: Do NOT add kspCommonMainMetadata - it generates actual in commonMain
+        // which conflicts with expect declaration
         add("kspAndroid", this)
         add("kspIosArm64", this)
         add("kspIosSimulatorArm64", this)

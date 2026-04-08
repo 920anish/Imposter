@@ -1,15 +1,17 @@
 package com.imposter.play.di
 
+import com.imposter.play.data.local.AppDatabase
 import com.imposter.play.data.local.AppPreferences
-import com.imposter.play.data.GamePrefsStore
-import com.imposter.play.engine.GameViewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    // Shared Logic
+    // Shared preferences (DataStore)
     single { AppPreferences(get()) }
 
-    // In the future, we add Room here:
-    // single { get<DatabaseBuilder>().build() }
+    // Room DAOs
+    single { get<AppDatabase>().categoryDao() }
+    single { get<AppDatabase>().wordDao() }
+    single { get<AppDatabase>().playerDao() }
+    single { get<AppDatabase>().playedHistoryDao() }
 }
 
