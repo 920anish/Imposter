@@ -1,0 +1,10 @@
+package com.imposter.play.di
+
+import org.koin.core.context.startKoin
+import org.koin.core.module.Module
+
+fun initKoin(additionalModules: List<Module> = emptyList()) {
+    startKoin {
+        modules(appModule, platformModule() ,*additionalModules.toTypedArray())
+    }
+}
