@@ -1,11 +1,15 @@
 package com.imposter.play.di
 
+import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.GamePrefsStore
 import com.imposter.play.engine.GameViewModel
 import org.koin.dsl.module
 
-fun appModule(prefsPath: String = "imposter_prefs.json") = module {
-    single { GamePrefsStore(filePath = prefsPath) }
-    single { GameViewModel(prefsStore = get()) }
+val appModule = module {
+    // Shared Logic
+    single { AppPreferences(get()) }
+
+    // In the future, we add Room here:
+    // single { get<DatabaseBuilder>().build() }
 }
 

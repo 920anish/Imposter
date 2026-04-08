@@ -1,4 +1,5 @@
 package com.imposter.play.di
 
-class PlatformModule {
-}
+import org.koin.core.module.Module
+
+expect fun platformModule(): Module
