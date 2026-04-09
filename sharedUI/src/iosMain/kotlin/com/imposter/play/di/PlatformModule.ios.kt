@@ -9,6 +9,7 @@ import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import okio.Path.Companion.toPath
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -39,6 +40,7 @@ actual fun platformModule() = module {
     }
 
     single<AppDatabase> {
+        val ioDispatcher: CoroutineDispatcher = get()
         val documentsPath = NSFileManager.defaultManager.URLForDirectory(
             directory = NSDocumentDirectory,
             inDomain = NSUserDomainMask,
@@ -66,6 +68,7 @@ actual fun platformModule() = module {
             name = dbPath,
         )
             .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(ioDispatcher)
             .build()
     }
 }

@@ -5,10 +5,13 @@ import com.imposter.play.data.entities.PlayedHistoryEntity
 import com.imposter.play.data.local.CATEGORY_ALL
 import com.imposter.play.data.local.PlayedHistoryDao
 import com.imposter.play.data.local.WordDao
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 
 class WordRepository(
     private val wordDao: WordDao,
     private val playedHistoryDao: PlayedHistoryDao,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
     /**
      * Get a random word from selected categories, excluding recently played words.
@@ -17,7 +20,7 @@ class WordRepository(
     suspend fun getRandomWord(
         selectedCategoryIds: Set<String>,
         difficulty: Int,
-    ): Word? {
+    ): Word?  = withContext(ioDispatcher){
         val excludeIds = playedHistoryDao.getRecentWordIds().toSet()
 
         val wordEntity = if (CATEGORY_ALL in selectedCategoryIds) {
@@ -38,7 +41,7 @@ class WordRepository(
             playedHistoryDao.pruneHistory()
         }
 
-        return wordEntity?.let {
+        return@withContext wordEntity?.let {
             Word(real = it.text, hint = it.hint ?: "")
         }
     }
@@ -46,7 +49,7 @@ class WordRepository(
     /**
      * Clear played history (for testing/reset)
      */
-    suspend fun clearHistory() {
+    suspend fun clearHistory()  = withContext(ioDispatcher){
         playedHistoryDao.clearAll()
     }
 }

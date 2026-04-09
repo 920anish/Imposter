@@ -10,6 +10,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import java.io.File
 import imposter.sharedui.generated.resources.Res
+import kotlinx.coroutines.CoroutineDispatcher
 
 actual fun platformModule() = module {
     single {
@@ -23,6 +24,7 @@ actual fun platformModule() = module {
     single<AppDatabase> {
         val context = androidContext()
         val dbFile = context.getDatabasePath(AppDatabase.DATABASE_NAME)
+        val ioDispatcher: CoroutineDispatcher = get()
 
         // Use a temporary file in cache to bridge CMP Resources to Room
         val tempFile = File(context.cacheDir, "temp_initial_words.db")
@@ -44,6 +46,7 @@ actual fun platformModule() = module {
             name = dbFile.absolutePath,
         )
             .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(ioDispatcher)
             // Point to the physical file we just extracted
             .createFromFile(tempFile)
             .build()

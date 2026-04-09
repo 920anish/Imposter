@@ -2,10 +2,13 @@ package com.imposter.play.data.repository
 
 import com.imposter.play.data.entities.CategoryEntity
 import com.imposter.play.data.local.CategoryDao
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class CategoryRepository(
     private val categoryDao: CategoryDao,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
     /**
      * Get all categories as a Flow for reactive UI
@@ -15,17 +18,17 @@ class CategoryRepository(
     /**
      * Get all categories
      */
-    suspend fun getAllCategories(): List<CategoryEntity> = categoryDao.getAll()
+    suspend fun getAllCategories(): List<CategoryEntity> = withContext(ioDispatcher){ categoryDao.getAll() }
 
     /**
      * Get only enabled categories
      */
-    suspend fun getEnabledCategories(): List<CategoryEntity> = categoryDao.getEnabled()
+    suspend fun getEnabledCategories(): List<CategoryEntity> = withContext(ioDispatcher){ categoryDao.getEnabled() }
 
     /**
      * Toggle category enabled state
      */
-    suspend fun toggleCategory(categoryId: String, enabled: Boolean) {
+    suspend fun toggleCategory(categoryId: String, enabled: Boolean) = withContext(ioDispatcher) {
         categoryDao.setEnabled(categoryId, enabled)
     }
 
@@ -37,7 +40,7 @@ class CategoryRepository(
         name: String,
         iconRes: String,
         displayOrder: Int = 0,
-    ) {
+    ) = withContext(ioDispatcher) {
         categoryDao.insert(
             CategoryEntity(
                 id = id,
@@ -54,14 +57,14 @@ class CategoryRepository(
     /**
      * Delete a custom category (only custom categories can be deleted)
      */
-    suspend fun deleteCustomCategory(categoryId: String) {
+    suspend fun deleteCustomCategory(categoryId: String) = withContext(ioDispatcher) {
         categoryDao.deleteCustomById(categoryId)
     }
 
     /**
      * Update word count for a category
      */
-    suspend fun updateWordCount(categoryId: String, count: Int) {
+    suspend fun updateWordCount(categoryId: String, count: Int) = withContext(ioDispatcher){
         categoryDao.updateWordCount(categoryId, count)
     }
 }
