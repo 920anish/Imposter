@@ -37,9 +37,7 @@ data class GameSession(
     val playerNames: List<String> = emptyList(),
 ) {
     val normalizedPlayerNames: List<String>
-        get() = if (playerNames.isNotEmpty()) {
-            playerNames
-        } else {
+        get() = playerNames.ifEmpty {
             (0 until config.playerCount).map { index ->
                 "Player ${index + 1}"
             }

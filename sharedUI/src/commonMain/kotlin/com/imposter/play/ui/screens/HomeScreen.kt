@@ -17,10 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -48,19 +44,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun HomeScreen(
     config: GameConfig,
-    onConfigChange: (GameConfig) -> Unit,
+    onDecreasePlayers: () -> Unit,
+    onIncreasePlayers: () -> Unit,
     onPlayNow: (GameConfig) -> Unit,
     onCustomize: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var playerCount by remember(config.playerCount) {
-        mutableIntStateOf(
-            config.playerCount.coerceIn(
-                3,
-                10
-            )
-        )
-    }
+    val playerCount = config.playerCount.coerceIn(3, 10)
     Box(
         modifier = modifier.fillMaxSize(),
     ) {
@@ -101,14 +91,18 @@ fun HomeScreen(
                 color = ColorMuted,
             )
             Spacer(Modifier.height(10.dp))
+            Text(
+                text = "Manage exact player activation/deactivation in Customize",
+                style = MaterialTheme.typography.labelSmall,
+                color = ColorMuted,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 PickerStepButton(
                     label = "−",
                     enabled = playerCount > 3,
-                    onClick = {
-                        playerCount--
-                        onConfigChange(config.copy(playerCount = playerCount))
-                    },
+                    onClick = onDecreasePlayers,
                 )
                 Box(
                     modifier = Modifier
@@ -128,10 +122,7 @@ fun HomeScreen(
                 PickerStepButton(
                     label = "+",
                     enabled = playerCount < 10,
-                    onClick = {
-                        playerCount++
-                        onConfigChange(config.copy(playerCount = playerCount))
-                    },
+                    onClick = onIncreasePlayers,
                 )
             }
             Spacer(Modifier.height(36.dp))

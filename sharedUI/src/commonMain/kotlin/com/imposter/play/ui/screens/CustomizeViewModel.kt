@@ -20,6 +20,7 @@ data class CustomizeUiState(
     val selectedCategoryIds: Set<String> = setOf(CATEGORY_ALL),
     val difficulty: Int = 1,
     val imposterHintEnabled: Boolean = true,
+    val isTimerEnabled: Boolean = true,
     val isLoading: Boolean = true,
 )
 
@@ -48,6 +49,7 @@ class CustomizeViewModel(
                 selectedCategoryIds = settings.selectedCategoryIds.ifEmpty { setOf(CATEGORY_ALL) },
                 difficulty = settings.difficulty.level,
                 imposterHintEnabled = settings.isHintEnabled,
+                isTimerEnabled = settings.isTimerEnabled,
                 isLoading = false,
             )
         }
@@ -96,25 +98,39 @@ class CustomizeViewModel(
         }
     }
 
+    fun setTimerEnabled(enabled: Boolean) {
+        _uiState.value = _uiState.value.copy(isTimerEnabled = enabled)
+        viewModelScope.launch {
+            appPreferences.setTimerEnabled(enabled)
+        }
+    }
+
     fun addPlayer(name: String) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
+            if (playerRepository.getActiveCount() >= 10) return@launch
             playerRepository.addPlayer(trimmed)
+            appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
             refreshPlayers()
         }
     }
 
     fun setPlayerActive(playerId: Long, active: Boolean) {
         viewModelScope.launch {
+            if (!active && playerRepository.getActiveCount() <= 3) return@launch
             playerRepository.setPlayerActive(playerId, active)
+            appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
             refreshPlayers()
         }
     }
 
     fun deletePlayer(playerId: Long) {
         viewModelScope.launch {
+            val player = playerRepository.getAllPlayers().firstOrNull { it.id == playerId }
+            if (player?.isActive == true && playerRepository.getActiveCount() <= 3) return@launch
             playerRepository.deletePlayer(playerId)
+            appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
             refreshPlayers()
         }
     }

@@ -47,13 +47,6 @@ import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_customize_add_player
 import imposter.sharedui.generated.resources.nav_customize_category
-import imposter.sharedui.generated.resources.nav_customize_difficulty
-import imposter.sharedui.generated.resources.nav_customize_easy
-import imposter.sharedui.generated.resources.nav_customize_hard
-import imposter.sharedui.generated.resources.nav_customize_hint_off
-import imposter.sharedui.generated.resources.nav_customize_hint_on
-import imposter.sharedui.generated.resources.nav_customize_imposter_hint
-import imposter.sharedui.generated.resources.nav_customize_medium
 import imposter.sharedui.generated.resources.nav_customize_play
 import imposter.sharedui.generated.resources.nav_customize_players_hint
 import imposter.sharedui.generated.resources.nav_customize_random
@@ -68,6 +61,7 @@ fun CustomizeScreen(
     config: GameConfig,
     onConfigChange: (GameConfig) -> Unit,
     onPlay: (GameConfig) -> Unit,
+    onOpenSettings: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CustomizeViewModel = koinInject(),
@@ -123,6 +117,11 @@ fun CustomizeScreen(
                     active = tab == "category",
                     modifier = Modifier.weight(1f),
                 ) { tab = "category" }
+                TabButton(
+                    text = "SETTINGS",
+                    active = false,
+                    modifier = Modifier.weight(1f),
+                ) { onOpenSettings() }
             }
             Spacer(Modifier.height(16.dp))
 
@@ -133,37 +132,38 @@ fun CustomizeScreen(
                     .verticalScroll(rememberScrollState()),
             ) {
                 if (tab == "players") {
+                    val activeCount = uiState.players.count { it.isActive }
                     PlayersTabContent(
                         players = uiState.players,
                         onTogglePlayer = { playerId, isActive ->
                             viewModel.setPlayerActive(playerId, isActive)
-                            onConfigChange(
-                                config.copy(
-                                    playerCount = uiState.players.count { it.isActive }.coerceIn(3, 10),
-                                )
-                            )
+                            val nextCount = if (isActive) {
+                                (activeCount + 1).coerceAtMost(10)
+                            } else {
+                                (activeCount - 1).coerceAtLeast(3)
+                            }
+                            onConfigChange(config.copy(playerCount = nextCount))
                         },
                         onDeletePlayer = { playerId ->
+                            val target = uiState.players.firstOrNull { it.id == playerId }
                             viewModel.deletePlayer(playerId)
-                            onConfigChange(
-                                config.copy(
-                                    playerCount = uiState.players.count { it.isActive }.coerceIn(3, 10),
-                                )
-                            )
+                            val nextCount = if (target?.isActive == true) {
+                                (activeCount - 1).coerceAtLeast(3)
+                            } else {
+                                activeCount
+                            }
+                            onConfigChange(config.copy(playerCount = nextCount))
                         },
                         onAddPlayer = { name ->
                             viewModel.addPlayer(name)
+                            onConfigChange(config.copy(playerCount = (activeCount + 1).coerceAtMost(10)))
                         },
                     )
                 } else {
                     CategoryTabContent(
                         categories = uiState.categories,
                         selectedCategoryIds = uiState.selectedCategoryIds,
-                        difficulty = uiState.difficulty,
-                        imposterHintEnabled = uiState.imposterHintEnabled,
                         onCategoryToggle = { categoryId -> viewModel.toggleCategory(categoryId) },
-                        onDifficultySelect = { level -> viewModel.setDifficulty(level) },
-                        onHintToggle = { enabled -> viewModel.setHintEnabled(enabled) },
                     )
                 }
             }
@@ -174,11 +174,7 @@ fun CustomizeScreen(
                 text = stringResource(Res.string.nav_customize_play),
                 onClick = {
                     onPlay(
-                        config.copy(
-                            playerCount = uiState.players.count { it.isActive }.coerceIn(3, 10),
-                            difficulty = uiState.difficulty,
-                            imposterHintEnabled = uiState.imposterHintEnabled,
-                        )
+                        config
                     )
                 },
             )
@@ -193,9 +189,17 @@ private fun PlayersTabContent(
     onDeletePlayer: (Long) -> Unit,
     onAddPlayer: (String) -> Unit,
 ) {
+    val activeCount = players.count { it.isActive }
     Text(
         text = stringResource(Res.string.nav_customize_players_hint),
         style = MaterialTheme.typography.labelMedium,
+        color = ColorMuted,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(6.dp))
+    Text(
+        text = "Active players: $activeCount / 10",
+        style = MaterialTheme.typography.labelSmall,
         color = ColorMuted,
         modifier = Modifier.fillMaxWidth(),
     )
@@ -230,9 +234,14 @@ private fun PlayersTabContent(
             Box(
                 Modifier
                     .size(44.dp)
-                    .border(1.dp, if (player.isActive) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                    .border(
+                        1.dp,
+                        if (player.isActive) ColorCrew.copy(alpha = 0.6f) else ColorBorder
+                    )
                     .background(if (player.isActive) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                    .clickable { onTogglePlayer(player.id, !player.isActive) },
+                    .clickable(
+                        enabled = !(player.isActive && activeCount <= 3)
+                    ) { onTogglePlayer(player.id, !player.isActive) },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -243,13 +252,13 @@ private fun PlayersTabContent(
             }
             Box(
                 Modifier.size(44.dp).border(1.dp, ColorBorder)
-                    .clickable { onDeletePlayer(player.id) },
+                    .clickable(enabled = !(player.isActive && activeCount <= 3)) { onDeletePlayer(player.id) },
                 contentAlignment = Alignment.Center,
             ) { Text("×", color = ColorMuted) }
         }
         Spacer(Modifier.height(8.dp))
     }
-    if (players.size < 20) {
+    if (activeCount < 10) {
         var newPlayerName by remember { mutableStateOf("") }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -312,87 +321,8 @@ private fun PlayersTabContent(
 private fun CategoryTabContent(
     categories: List<CategoryEntity>,
     selectedCategoryIds: Set<String>,
-    difficulty: Int,
-    imposterHintEnabled: Boolean,
     onCategoryToggle: (String) -> Unit,
-    onDifficultySelect: (Int) -> Unit,
-    onHintToggle: (Boolean) -> Unit,
 ) {
-    Text(
-        text = stringResource(Res.string.nav_customize_difficulty),
-        color = ColorMuted,
-        style = MaterialTheme.typography.labelSmall,
-        modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    val labels = listOf(
-        stringResource(Res.string.nav_customize_easy),
-        stringResource(Res.string.nav_customize_medium),
-        stringResource(Res.string.nav_customize_hard),
-    )
-    val colors = listOf(ColorWin, ColorWarn, ColorImp)
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        labels.forEachIndexed { index, label ->
-            Box(
-                Modifier.weight(1f).height(36.dp).border(
-                    1.dp,
-                    if (difficulty == index) colors[index].copy(alpha = 0.6f) else ColorBorder
-                ).background(
-                    if (difficulty == index) colors[index].copy(alpha = 0.12f) else Color.Transparent
-                ).clickable { onDifficultySelect(index) },
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = label,
-                    color = if (difficulty == index) colors[index] else ColorMuted,
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-        }
-    }
-    Spacer(Modifier.height(14.dp))
-    Text(
-        text = stringResource(Res.string.nav_customize_imposter_hint),
-        color = ColorMuted,
-        style = MaterialTheme.typography.labelSmall,
-        modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        Box(
-            Modifier.weight(1f).height(36.dp)
-                .border(
-                    1.dp,
-                    if (!imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
-                )
-                .background(if (!imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                .clickable { onHintToggle(false) },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(Res.string.nav_customize_hint_off),
-                color = if (!imposterHintEnabled) ColorCrew else ColorMuted,
-                style = MaterialTheme.typography.labelSmall,
-            )
-        }
-        Box(
-            Modifier.weight(1f).height(36.dp)
-                .border(
-                    1.dp,
-                    if (imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
-                )
-                .background(if (imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                .clickable { onHintToggle(true) },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(Res.string.nav_customize_hint_on),
-                color = if (imposterHintEnabled) ColorCrew else ColorMuted,
-                style = MaterialTheme.typography.labelSmall,
-            )
-        }
-    }
-    Spacer(Modifier.height(14.dp))
     Text(
         text = stringResource(Res.string.nav_customize_category),
         color = ColorMuted,

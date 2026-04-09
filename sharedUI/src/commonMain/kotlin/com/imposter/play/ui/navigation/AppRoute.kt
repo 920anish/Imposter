@@ -10,6 +10,9 @@ data object HomeRoute : NavKey
 data object CustomizeRoute : NavKey
 
 @Serializable
+data object SettingsRoute : NavKey
+
+@Serializable
 data class RoleRevealRoute(val playerIndex: Int) : NavKey
 
 @Serializable
@@ -20,4 +23,3 @@ data object VoteRoute : NavKey
 
 @Serializable
 data object ResultRoute : NavKey
-

@@ -30,6 +30,8 @@ class GameViewModel(
     fun onIntent(intent: GameIntent) {
         when (intent) {
             is GameIntent.UpdateSetupConfig -> updateSetupConfig(intent.config)
+            GameIntent.IncreasePlayerCount -> increasePlayerCount()
+            GameIntent.DecreasePlayerCount -> decreasePlayerCount()
             is GameIntent.StartGame -> startGame(intent.config)
             GameIntent.RevealCard -> revealCard()
             GameIntent.NextPlayer -> nextPlayer()
@@ -43,14 +45,18 @@ class GameViewModel(
 
     fun loadPrefs() {
         viewModelScope.launch {
+            playerRepository.ensureDefaultPlayers()
+            val activeCount = playerRepository.getActiveCount().coerceIn(3, 10)
             val settings = appPreferences.settings.first()
             _session.value = _session.value.copy(
                 config = GameConfig(
-                    playerCount = settings.playerCount.coerceIn(3, 10),
+                    playerCount = activeCount,
                     difficulty = settings.difficulty.level,
                     imposterHintEnabled = settings.isHintEnabled,
+                    isTimerEnabled = settings.isTimerEnabled,
                 )
             )
+            appPreferences.setPlayerCount(activeCount)
         }
     }
 
@@ -66,6 +72,38 @@ class GameViewModel(
             appPreferences.setPlayerCount(normalized.playerCount)
             appPreferences.setDifficulty(Difficulty.fromInt(normalized.difficulty))
             appPreferences.setHintsEnabled(normalized.imposterHintEnabled)
+            appPreferences.setTimerEnabled(normalized.isTimerEnabled)
+        }
+    }
+
+    private fun increasePlayerCount() {
+        viewModelScope.launch {
+            val activePlayers = playerRepository.getActivePlayers()
+            if (activePlayers.size >= 10) return@launch
+
+            val allPlayers = playerRepository.getAllPlayers()
+            val inactive = allPlayers.firstOrNull { !it.isActive }
+            if (inactive != null) {
+                playerRepository.setPlayerActive(inactive.id, true)
+            } else {
+                playerRepository.addPlayer("Player ${allPlayers.size + 1}")
+            }
+            val updatedCount = playerRepository.getActiveCount().coerceIn(3, 10)
+            _session.value = _session.value.copy(config = _session.value.config.copy(playerCount = updatedCount))
+            appPreferences.setPlayerCount(updatedCount)
+        }
+    }
+
+    private fun decreasePlayerCount() {
+        viewModelScope.launch {
+            val activePlayers = playerRepository.getActivePlayers()
+            if (activePlayers.size <= 3) return@launch
+
+            val last = activePlayers.lastOrNull() ?: return@launch
+            playerRepository.setPlayerActive(last.id, false)
+            val updatedCount = playerRepository.getActiveCount().coerceIn(3, 10)
+            _session.value = _session.value.copy(config = _session.value.config.copy(playerCount = updatedCount))
+            appPreferences.setPlayerCount(updatedCount)
         }
     }
 
@@ -93,7 +131,7 @@ class GameViewModel(
             discussionTimerJob?.cancel()
 
             _session.value = GameSession(
-                config = normalizedConfig.copy(playerCount = playerCount),
+                config = normalizedConfig.copy(playerCount = playerCount, isTimerEnabled = settings.isTimerEnabled),
                 state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
                 imposterIndex = imposterIndex,
                 currentWord = selectedWord,
@@ -123,9 +161,14 @@ class GameViewModel(
         if (state.playerIndex >= lastPlayerIndex) {
             discussionTimerJob?.cancel()
             _session.value = current.copy(
-                state = GameState.Discussion(secondsLeft = 180, isRunning = true),
+                state = GameState.Discussion(
+                    secondsLeft = 180,
+                    isRunning = current.config.isTimerEnabled,
+                ),
             )
-            startDiscussionCountdown()
+            if (current.config.isTimerEnabled) {
+                startDiscussionCountdown()
+            }
             return
         }
 

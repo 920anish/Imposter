@@ -17,6 +17,7 @@ import com.imposter.play.ui.screens.DiscussionScreen
 import com.imposter.play.ui.screens.HomeScreen
 import com.imposter.play.ui.screens.ResultScreen
 import com.imposter.play.ui.screens.RoleRevealScreen
+import com.imposter.play.ui.screens.SettingsScreen
 import com.imposter.play.ui.screens.VoteScreen
 import org.koin.compose.koinInject
 
@@ -45,13 +46,8 @@ fun AppNavigator(
             entry<HomeRoute> {
                 HomeScreen(
                     config = session.config,
-                    onConfigChange = { updated ->
-                        viewModel.onIntent(
-                            GameIntent.UpdateSetupConfig(
-                                updated
-                            )
-                        )
-                    },
+                    onDecreasePlayers = { viewModel.onIntent(GameIntent.DecreasePlayerCount) },
+                    onIncreasePlayers = { viewModel.onIntent(GameIntent.IncreasePlayerCount) },
                     onPlayNow = {
                         viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))
@@ -72,6 +68,16 @@ fun AppNavigator(
                     onPlay = {
                         viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))
+                    },
+                    onOpenSettings = { backStack.add(SettingsRoute) },
+                    onClose = { backStack.removeLastOrNull() },
+                )
+            }
+            entry<SettingsRoute> {
+                SettingsScreen(
+                    config = session.config,
+                    onConfigChange = { updated ->
+                        viewModel.onIntent(GameIntent.UpdateSetupConfig(updated))
                     },
                     onClose = { backStack.removeLastOrNull() },
                 )

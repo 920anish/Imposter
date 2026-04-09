@@ -55,15 +55,21 @@ class PlayerRepository(
          newPlayer.copy(id = id)
     }
 
-    /**
-     * Remove player from active game (deactivate, don't delete)
-     */
-    suspend fun deactivatePlayer(playerId: Long) = withContext(ioDispatcher) {
-        playerDao.setActive(playerId, false)
-    }
-
     suspend fun setPlayerActive(playerId: Long, active: Boolean) = withContext(ioDispatcher) {
         playerDao.setActive(playerId, active)
+    }
+
+    suspend fun ensureDefaultPlayers() = withContext(ioDispatcher) {
+        val allPlayers = playerDao.getAll()
+        if (allPlayers.isNotEmpty()) return@withContext
+
+        playerDao.insertAll(
+            listOf(
+                PlayerEntity(name = "Player 1", isActive = true, lobbyOrder = 0),
+                PlayerEntity(name = "Player 2", isActive = true, lobbyOrder = 1),
+                PlayerEntity(name = "Player 3", isActive = true, lobbyOrder = 2),
+            )
+        )
     }
 
     /**
