@@ -19,8 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,10 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.imposter.play.data.entities.CategoryEntity
+import com.imposter.play.data.local.CATEGORY_ALL
 import com.imposter.play.engine.GameConfig
 import com.imposter.play.theme.ColorBorder
 import com.imposter.play.theme.ColorBorder2
 import com.imposter.play.theme.ColorCrew
+import com.imposter.play.theme.ColorImp
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.ColorText
@@ -58,6 +61,7 @@ import imposter.sharedui.generated.resources.nav_customize_tab_category
 import imposter.sharedui.generated.resources.nav_customize_tab_players
 import imposter.sharedui.generated.resources.nav_customize_title
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun CustomizeScreen(
@@ -66,7 +70,10 @@ fun CustomizeScreen(
     onPlay: (GameConfig) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: CustomizeViewModel = koinInject(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    
     val players = remember(config.playerCount, config.playerNames) {
         mutableStateListOf<String>().apply {
             addAll((0 until config.playerCount.coerceIn(3, 10)).map { index ->
@@ -75,30 +82,6 @@ fun CustomizeScreen(
         }
     }
     var tab by remember { mutableStateOf("players") }
-    val categoryKeys = remember {
-        listOf(
-            "ANIMALS",
-            "FOOD",
-            "CITIES",
-            "MOVIES",
-            "SPORTS",
-            "SCIENCE",
-            "TECH",
-            "MUSIC",
-            "GEOGRAPHY"
-        )
-    }
-    var categoryIndex by remember(config.category) {
-        mutableIntStateOf(categoryKeys.indexOf(config.category.uppercase()).coerceAtLeast(-1))
-    }
-    var difficulty by remember(config.difficulty) {
-        mutableIntStateOf(
-            config.difficulty.coerceIn(
-                0,
-                2
-            )
-        )
-    }
 
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
@@ -190,21 +173,13 @@ fun CustomizeScreen(
                     )
                 } else {
                     CategoryTabContent(
-                        categoryKeys = categoryKeys,
-                        categoryIndex = categoryIndex,
-                        difficulty = difficulty,
-                        imposterHintEnabled = config.imposterHintEnabled,
-                        onCategorySelect = { index, category ->
-                            categoryIndex = index
-                            onConfigChange(config.copy(category = category))
-                        },
-                        onDifficultySelect = { newDifficulty ->
-                            difficulty = newDifficulty
-                            onConfigChange(config.copy(difficulty = newDifficulty))
-                        },
-                        onHintToggle = { enabled ->
-                            onConfigChange(config.copy(imposterHintEnabled = enabled))
-                        },
+                        categories = uiState.categories,
+                        selectedCategoryIds = uiState.selectedCategoryIds,
+                        difficulty = uiState.difficulty,
+                        imposterHintEnabled = uiState.imposterHintEnabled,
+                        onCategoryToggle = { categoryId -> viewModel.toggleCategory(categoryId) },
+                        onDifficultySelect = { level -> viewModel.setDifficulty(level) },
+                        onHintToggle = { enabled -> viewModel.setHintEnabled(enabled) },
                     )
                 }
             }
@@ -218,8 +193,8 @@ fun CustomizeScreen(
                         config.copy(
                             playerCount = players.size.coerceIn(3, 10),
                             playerNames = players.toList(),
-                            category = if (categoryIndex < 0) "RANDOM" else categoryKeys[categoryIndex],
-                            difficulty = difficulty,
+                            difficulty = uiState.difficulty,
+                            imposterHintEnabled = uiState.imposterHintEnabled,
                         )
                     )
                 },
@@ -311,11 +286,11 @@ private fun PlayersTabContent(
 
 @Composable
 private fun CategoryTabContent(
-    categoryKeys: List<String>,
-    categoryIndex: Int,
+    categories: List<CategoryEntity>,
+    selectedCategoryIds: Set<String>,
     difficulty: Int,
     imposterHintEnabled: Boolean,
-    onCategorySelect: (Int, String) -> Unit,
+    onCategoryToggle: (String) -> Unit,
     onDifficultySelect: (Int) -> Unit,
     onHintToggle: (Boolean) -> Unit,
 ) {
@@ -331,7 +306,7 @@ private fun CategoryTabContent(
         stringResource(Res.string.nav_customize_medium),
         stringResource(Res.string.nav_customize_hard),
     )
-    val colors = listOf(ColorWin, ColorWarn, com.imposter.play.theme.ColorImp)
+    val colors = listOf(ColorWin, ColorWarn, ColorImp)
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
         labels.forEachIndexed { index, label ->
             Box(
@@ -401,46 +376,62 @@ private fun CategoryTabContent(
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
+    
+    // "All Categories" option
+    val isAllSelected = CATEGORY_ALL in selectedCategoryIds
     Box(
         Modifier.fillMaxWidth().height(44.dp)
-            .border(1.dp, if (categoryIndex == -1) ColorCrew.copy(alpha = 0.5f) else ColorBorder)
-            .background(if (categoryIndex == -1) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-            .clickable { onCategorySelect(-1, "RANDOM") },
+            .border(1.dp, if (isAllSelected) ColorCrew.copy(alpha = 0.5f) else ColorBorder)
+            .background(if (isAllSelected) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+            .clickable { onCategoryToggle(CATEGORY_ALL) },
         contentAlignment = Alignment.Center,
     ) {
         Text(
             stringResource(Res.string.nav_customize_random),
-            color = if (categoryIndex == -1) ColorCrew else ColorMuted
+            color = if (isAllSelected) ColorCrew else ColorMuted
         )
     }
     Spacer(Modifier.height(10.dp))
-    categoryKeys.chunked(3).forEachIndexed { rowIndex, rowCategories ->
+    
+    // Category grid with multi-select
+    categories.chunked(3).forEach { rowCategories ->
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            rowCategories.forEachIndexed { colIndex, category ->
-                val index = rowIndex * 3 + colIndex
+            rowCategories.forEach { category ->
+                val isSelected = category.id in selectedCategoryIds
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .height(84.dp)
-                        .background(if (categoryIndex == index) ColorCrew.copy(alpha = 0.12f) else ColorSurface)
+                        .background(if (isSelected) ColorCrew.copy(alpha = 0.12f) else ColorSurface)
                         .border(
                             1.dp,
-                            if (categoryIndex == index) ColorCrew.copy(alpha = 0.55f) else ColorBorder
+                            if (isSelected) ColorCrew.copy(alpha = 0.55f) else ColorBorder
                         )
-                        .clickable { onCategorySelect(index, category) }
+                        .clickable { onCategoryToggle(category.id) }
                         .padding(8.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = category.lowercase().replaceFirstChar { it.uppercase() },
-                        color = if (categoryIndex == index) ColorCrew else ColorText,
-                        style = MaterialTheme.typography.labelMedium,
-                        textAlign = TextAlign.Center,
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = category.name,
+                            color = if (isSelected) ColorCrew else ColorText,
+                            style = MaterialTheme.typography.labelMedium,
+                            textAlign = TextAlign.Center,
+                        )
+                        Text(
+                            text = "${category.wordCount} words",
+                            color = ColorMuted,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
                 }
+            }
+            // Fill empty slots in last row
+            repeat(3 - rowCategories.size) {
+                Spacer(Modifier.weight(1f))
             }
         }
         Spacer(Modifier.height(8.dp))

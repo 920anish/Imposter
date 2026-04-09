@@ -59,9 +59,11 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             api(libs.androidx.core.splashscreen)
+            api(libs.koin.android)
         }
 
         iosMain.dependencies {
+
         }
 
     }
@@ -93,4 +95,9 @@ dependencies {
         add("kspIosArm64", this)
         add("kspIosSimulatorArm64", this)
     }
+}
+
+// in build.gradle.kts
+compose.resources {
+    publicResClass = true
 }

@@ -31,7 +31,7 @@ data class GameSession(
     val config: GameConfig = GameConfig(),
     val state: GameState = GameState.Idle,
     val imposterIndex: Int = 0,
-    val currentWord: Word = Word(real = "PLACEHOLDER"),
+    val currentWord: Word = Word(real = "PLACEHOLDER", hint = ""),
     val votes: List<VoteCount> = emptyList(),
     val revealedPlayers: Set<Int> = emptySet(),
 ) {

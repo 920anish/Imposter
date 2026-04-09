@@ -6,9 +6,7 @@ import com.imposter.play.data.Difficulty
 import com.imposter.play.data.Word
 import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.local.CATEGORY_ALL
-import com.imposter.play.data.local.PlayedHistoryDao
-import com.imposter.play.data.local.WordDao
-import com.imposter.play.data.entities.PlayedHistoryEntity
+import com.imposter.play.data.repository.WordRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +18,7 @@ import kotlin.random.Random
 
 class GameViewModel(
     private val appPreferences: AppPreferences,
-    private val wordDao: WordDao,
-    private val playedHistoryDao: PlayedHistoryDao,
+    private val wordRepository: WordRepository,
 ) : ViewModel() {
 
     private val _session = MutableStateFlow(GameSession())
@@ -49,8 +46,7 @@ class GameViewModel(
             _session.value = _session.value.copy(
                 config = GameConfig(
                     playerCount = settings.playerCount.coerceIn(3, 10),
-                    playerNames = emptyList(), // Names now come from PlayerDao
-                    category = settings.selectedCategoryIds.firstOrNull() ?: CATEGORY_ALL,
+                    playerNames = emptyList(),
                     difficulty = settings.difficulty.level,
                     imposterHintEnabled = settings.isHintEnabled,
                 )
@@ -81,32 +77,16 @@ class GameViewModel(
 
         viewModelScope.launch {
             val settings = appPreferences.settings.first()
-            val excludeIds = playedHistoryDao.getRecentWordIds().toSet()
-            
-            // Get random word from database
-            val wordEntity = if (CATEGORY_ALL in settings.selectedCategoryIds) {
-                wordDao.getRandomWordFromAll(excludeIds, normalizedConfig.difficulty)
-            } else {
-                wordDao.getRandomWord(settings.selectedCategoryIds, excludeIds, normalizedConfig.difficulty)
-            }
 
-            // Fallback to empty word if database is empty (will be fixed when DB is prepopulated)
-            val selectedWord = Word(
-                real = wordEntity?.text ?: "No words available",
-                hint = wordEntity?.hint ?: "Check database",
-            )
-
-            // Mark word as played
-            wordEntity?.let {
-                playedHistoryDao.markPlayed(
-                    PlayedHistoryEntity(wordId = it.id, timestamp = kotlin.time.Clock.System.now().toEpochMilliseconds())
-                )
-                playedHistoryDao.pruneHistory()
-            }
+            // Get random word from repository (handles exclusion + marking as played)
+            val selectedWord = wordRepository.getRandomWord(
+                selectedCategoryIds = settings.selectedCategoryIds,
+                difficulty = normalizedConfig.difficulty,
+            ) ?: Word(real = "No words available", hint = "Check database")
 
             val imposterIndex = Random.nextInt(until = normalizedConfig.playerCount)
             discussionTimerJob?.cancel()
-            
+
             _session.value = GameSession(
                 config = normalizedConfig,
                 state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
