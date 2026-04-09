@@ -3,9 +3,11 @@ package com.imposter.play.ui.screens
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imposter.play.data.entities.CategoryEntity
+import com.imposter.play.data.entities.PlayerEntity
 import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.local.CATEGORY_ALL
 import com.imposter.play.data.repository.CategoryRepository
+import com.imposter.play.data.repository.PlayerRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +16,7 @@ import kotlinx.coroutines.launch
 
 data class CustomizeUiState(
     val categories: List<CategoryEntity> = emptyList(),
+    val players: List<PlayerEntity> = emptyList(),
     val selectedCategoryIds: Set<String> = setOf(CATEGORY_ALL),
     val difficulty: Int = 1,
     val imposterHintEnabled: Boolean = true,
@@ -22,6 +25,7 @@ data class CustomizeUiState(
 
 class CustomizeViewModel(
     private val categoryRepository: CategoryRepository,
+    private val playerRepository: PlayerRepository,
     private val appPreferences: AppPreferences,
 ) : ViewModel() {
 
@@ -36,9 +40,11 @@ class CustomizeViewModel(
         viewModelScope.launch {
             val categories = categoryRepository.getAllCategories()
             val settings = appPreferences.settings.first()
-            
+            val players = playerRepository.getAllPlayers()
+
             _uiState.value = CustomizeUiState(
                 categories = categories,
+                players = players,
                 selectedCategoryIds = settings.selectedCategoryIds.ifEmpty { setOf(CATEGORY_ALL) },
                 difficulty = settings.difficulty.level,
                 imposterHintEnabled = settings.isHintEnabled,
@@ -88,5 +94,33 @@ class CustomizeViewModel(
         viewModelScope.launch {
             appPreferences.setHintsEnabled(enabled)
         }
+    }
+
+    fun addPlayer(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        viewModelScope.launch {
+            playerRepository.addPlayer(trimmed)
+            refreshPlayers()
+        }
+    }
+
+    fun setPlayerActive(playerId: Long, active: Boolean) {
+        viewModelScope.launch {
+            playerRepository.setPlayerActive(playerId, active)
+            refreshPlayers()
+        }
+    }
+
+    fun deletePlayer(playerId: Long) {
+        viewModelScope.launch {
+            playerRepository.deletePlayer(playerId)
+            refreshPlayers()
+        }
+    }
+
+    private suspend fun refreshPlayers() {
+        val players = playerRepository.getAllPlayers()
+        _uiState.value = _uiState.value.copy(players = players)
     }
 }

@@ -34,10 +34,15 @@ data class GameSession(
     val currentWord: Word = Word(real = "PLACEHOLDER", hint = ""),
     val votes: List<VoteCount> = emptyList(),
     val revealedPlayers: Set<Int> = emptySet(),
+    val playerNames: List<String> = emptyList(),
 ) {
     val normalizedPlayerNames: List<String>
-        get() = (0 until config.playerCount).map { index ->
-            config.playerNames.getOrNull(index)?.trim().takeUnless { it.isNullOrBlank() } ?: "Player ${index + 1}"
+        get() = if (playerNames.isNotEmpty()) {
+            playerNames
+        } else {
+            (0 until config.playerCount).map { index ->
+                "Player ${index + 1}"
+            }
         }
 
     val winningPlayerIndex: Int?
@@ -53,4 +58,3 @@ sealed class PlayerRole {
     ) : PlayerRole()
     data object Unknown : PlayerRole()
 }
-

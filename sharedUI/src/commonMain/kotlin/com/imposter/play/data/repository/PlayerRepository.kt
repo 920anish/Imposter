@@ -62,6 +62,10 @@ class PlayerRepository(
         playerDao.setActive(playerId, false)
     }
 
+    suspend fun setPlayerActive(playerId: Long, active: Boolean) = withContext(ioDispatcher) {
+        playerDao.setActive(playerId, active)
+    }
+
     /**
      * Delete a player permanently
      */

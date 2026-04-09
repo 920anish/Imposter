@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.imposter.play.data.Difficulty
 import com.imposter.play.data.Word
 import com.imposter.play.data.local.AppPreferences
-import com.imposter.play.data.local.CATEGORY_ALL
+import com.imposter.play.data.repository.PlayerRepository
 import com.imposter.play.data.repository.WordRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,6 +19,7 @@ import kotlin.random.Random
 class GameViewModel(
     private val appPreferences: AppPreferences,
     private val wordRepository: WordRepository,
+    private val playerRepository: PlayerRepository,
 ) : ViewModel() {
 
     private val _session = MutableStateFlow(GameSession())
@@ -46,7 +47,6 @@ class GameViewModel(
             _session.value = _session.value.copy(
                 config = GameConfig(
                     playerCount = settings.playerCount.coerceIn(3, 10),
-                    playerNames = emptyList(),
                     difficulty = settings.difficulty.level,
                     imposterHintEnabled = settings.isHintEnabled,
                 )
@@ -77,6 +77,11 @@ class GameViewModel(
 
         viewModelScope.launch {
             val settings = appPreferences.settings.first()
+            val activePlayers = playerRepository.getActivePlayers()
+            val playerNames = activePlayers.map { it.name }
+
+            val playerCount = playerNames.size.coerceIn(3, 10)
+            if (playerCount < 3) return@launch
 
             // Get random word from repository (handles exclusion + marking as played)
             val selectedWord = wordRepository.getRandomWord(
@@ -84,16 +89,17 @@ class GameViewModel(
                 difficulty = normalizedConfig.difficulty,
             ) ?: Word(real = "No words available", hint = "Check database")
 
-            val imposterIndex = Random.nextInt(until = normalizedConfig.playerCount)
+            val imposterIndex = Random.nextInt(until = playerCount)
             discussionTimerJob?.cancel()
 
             _session.value = GameSession(
-                config = normalizedConfig,
+                config = normalizedConfig.copy(playerCount = playerCount),
                 state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
                 imposterIndex = imposterIndex,
                 currentWord = selectedWord,
-                votes = (0 until normalizedConfig.playerCount).map { VoteCount(it, 0) },
+                votes = (0 until playerCount).map { VoteCount(it, 0) },
                 revealedPlayers = emptySet(),
+                playerNames = playerNames,
             )
 
             persistStartPreferences(normalizedConfig)

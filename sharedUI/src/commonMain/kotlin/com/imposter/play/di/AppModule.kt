@@ -29,8 +29,8 @@ val appModule = module {
     single { PlayerRepository(get(), get()) }
 
     // ViewModels
-    factory { GameViewModel(get(), get()) }
-    factory { CustomizeViewModel(get(), get()) }
+    factory { GameViewModel(get(), get(), get()) }
+    factory { CustomizeViewModel(get(), get(), get()) }
 
 
 

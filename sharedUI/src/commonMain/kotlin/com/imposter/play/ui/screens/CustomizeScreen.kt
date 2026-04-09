@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.imposter.play.data.entities.CategoryEntity
+import com.imposter.play.data.entities.PlayerEntity
 import com.imposter.play.data.local.CATEGORY_ALL
 import com.imposter.play.engine.GameConfig
 import com.imposter.play.theme.ColorBorder
@@ -73,14 +73,6 @@ fun CustomizeScreen(
     viewModel: CustomizeViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
-    val players = remember(config.playerCount, config.playerNames) {
-        mutableStateListOf<String>().apply {
-            addAll((0 until config.playerCount.coerceIn(3, 10)).map { index ->
-                config.playerNames.getOrNull(index).orEmpty()
-            })
-        }
-    }
     var tab by remember { mutableStateOf("players") }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -142,33 +134,25 @@ fun CustomizeScreen(
             ) {
                 if (tab == "players") {
                     PlayersTabContent(
-                        players = players,
-                        onPlayerNameChange = { index, updated ->
-                            players[index] = updated
+                        players = uiState.players,
+                        onTogglePlayer = { playerId, isActive ->
+                            viewModel.setPlayerActive(playerId, isActive)
                             onConfigChange(
                                 config.copy(
-                                    playerCount = players.size.coerceIn(3, 10),
-                                    playerNames = players.toList(),
+                                    playerCount = uiState.players.count { it.isActive }.coerceIn(3, 10),
                                 )
                             )
                         },
-                        onRemovePlayer = { index ->
-                            players.removeAt(index)
+                        onDeletePlayer = { playerId ->
+                            viewModel.deletePlayer(playerId)
                             onConfigChange(
                                 config.copy(
-                                    playerCount = players.size.coerceIn(3, 10),
-                                    playerNames = players.toList(),
+                                    playerCount = uiState.players.count { it.isActive }.coerceIn(3, 10),
                                 )
                             )
                         },
-                        onAddPlayer = {
-                            players.add("")
-                            onConfigChange(
-                                config.copy(
-                                    playerCount = players.size.coerceIn(3, 10),
-                                    playerNames = players.toList(),
-                                )
-                            )
+                        onAddPlayer = { name ->
+                            viewModel.addPlayer(name)
                         },
                     )
                 } else {
@@ -191,8 +175,7 @@ fun CustomizeScreen(
                 onClick = {
                     onPlay(
                         config.copy(
-                            playerCount = players.size.coerceIn(3, 10),
-                            playerNames = players.toList(),
+                            playerCount = uiState.players.count { it.isActive }.coerceIn(3, 10),
                             difficulty = uiState.difficulty,
                             imposterHintEnabled = uiState.imposterHintEnabled,
                         )
@@ -205,10 +188,10 @@ fun CustomizeScreen(
 
 @Composable
 private fun PlayersTabContent(
-    players: List<String>,
-    onPlayerNameChange: (Int, String) -> Unit,
-    onRemovePlayer: (Int) -> Unit,
-    onAddPlayer: () -> Unit,
+    players: List<PlayerEntity>,
+    onTogglePlayer: (Long, Boolean) -> Unit,
+    onDeletePlayer: (Long) -> Unit,
+    onAddPlayer: (String) -> Unit,
 ) {
     Text(
         text = stringResource(Res.string.nav_customize_players_hint),
@@ -217,7 +200,7 @@ private fun PlayersTabContent(
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(10.dp))
-    players.forEachIndexed { index, name ->
+    players.forEachIndexed { index, player ->
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -234,23 +217,65 @@ private fun PlayersTabContent(
                     .weight(1f)
                     .height(44.dp)
                     .background(ColorSurface)
-                    .border(1.dp, if (name.isBlank()) ColorBorder else ColorBorder2)
+                    .border(1.dp, if (player.isActive) ColorBorder2 else ColorBorder)
+                    .padding(horizontal = 12.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(
+                    text = player.name,
+                    color = if (player.isActive) ColorText else ColorMuted,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            Box(
+                Modifier
+                    .size(44.dp)
+                    .border(1.dp, if (player.isActive) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                    .background(if (player.isActive) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                    .clickable { onTogglePlayer(player.id, !player.isActive) },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = if (player.isActive) "ON" else "OFF",
+                    color = if (player.isActive) ColorCrew else ColorMuted,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+            Box(
+                Modifier.size(44.dp).border(1.dp, ColorBorder)
+                    .clickable { onDeletePlayer(player.id) },
+                contentAlignment = Alignment.Center,
+            ) { Text("×", color = ColorMuted) }
+        }
+        Spacer(Modifier.height(8.dp))
+    }
+    if (players.size < 20) {
+        var newPlayerName by remember { mutableStateOf("") }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp)
+                    .background(ColorSurface)
+                    .border(1.dp, ColorBorder)
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 BasicTextField(
-                    value = name,
-                    onValueChange = { onPlayerNameChange(index, it) },
+                    value = newPlayerName,
+                    onValueChange = { newPlayerName = it },
                     singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        color = ColorText
-                    ),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = ColorText),
                     cursorBrush = androidx.compose.ui.graphics.SolidColor(ColorCrew),
                     modifier = Modifier.fillMaxWidth(),
                     decorationBox = { innerTextField ->
-                        if (name.isBlank()) {
+                        if (newPlayerName.isBlank()) {
                             Text(
-                                "Player ${index + 1}",
+                                "New player name",
                                 color = ColorMuted,
                                 style = MaterialTheme.typography.bodyMedium
                             )
@@ -259,27 +284,26 @@ private fun PlayersTabContent(
                     },
                 )
             }
-            if (players.size > 3) {
-                Box(
-                    Modifier.size(44.dp).border(1.dp, ColorBorder)
-                        .clickable { onRemovePlayer(index) },
-                    contentAlignment = Alignment.Center,
-                ) { Text("×", color = ColorMuted) }
+            Box(
+                Modifier
+                    .height(44.dp)
+                    .border(1.dp, ColorBorder)
+                    .padding(horizontal = 12.dp)
+                    .clickable {
+                        val name = newPlayerName.trim()
+                        if (name.isNotEmpty()) {
+                            onAddPlayer(name)
+                            newPlayerName = ""
+                        }
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(Res.string.nav_customize_add_player),
+                    color = ColorMuted,
+                    style = MaterialTheme.typography.labelMedium,
+                )
             }
-        }
-        Spacer(Modifier.height(8.dp))
-    }
-    if (players.size < 10) {
-        Box(
-            Modifier.fillMaxWidth().height(44.dp).border(1.dp, ColorBorder)
-                .clickable { onAddPlayer() },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(Res.string.nav_customize_add_player),
-                color = ColorMuted,
-                style = MaterialTheme.typography.labelMedium,
-            )
         }
     }
 }
