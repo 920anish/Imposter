@@ -147,6 +147,15 @@ class CustomizeViewModel(
         }
     }
 
+    fun reorderPlayers(orderedPlayerIds: List<Long>) {
+        viewModelScope.launch {
+            orderedPlayerIds.forEachIndexed { index, playerId ->
+                playerRepository.updateLobbyOrder(playerId, index)
+            }
+            refreshPlayers()
+        }
+    }
+
     private suspend fun refreshPlayers() {
         val players = playerRepository.getAllPlayers()
         _uiState.value = _uiState.value.copy(players = players)

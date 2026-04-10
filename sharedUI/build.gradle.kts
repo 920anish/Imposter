@@ -48,6 +48,8 @@ kotlin {
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.reorderable)
+
         }
 
         commonTest.dependencies {

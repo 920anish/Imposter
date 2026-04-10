@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -46,17 +47,21 @@ class GameViewModel(
     fun loadPrefs() {
         viewModelScope.launch {
             playerRepository.ensureDefaultPlayers()
-            val activeCount = playerRepository.getActiveCount().coerceIn(3, 10)
             val settings = appPreferences.settings.first()
             _session.value = _session.value.copy(
-                config = GameConfig(
-                    playerCount = activeCount,
+                config = _session.value.config.copy(
                     difficulty = settings.difficulty.level,
                     imposterHintEnabled = settings.isHintEnabled,
                     isTimerEnabled = settings.isTimerEnabled,
                 )
             )
-            appPreferences.setPlayerCount(activeCount)
+            playerRepository.getActivePlayersFlow().collectLatest { activePlayers ->
+                val activeCount = activePlayers.size.coerceIn(3, 10)
+                _session.value = _session.value.copy(
+                    config = _session.value.config.copy(playerCount = activeCount)
+                )
+                appPreferences.setPlayerCount(activeCount)
+            }
         }
     }
 
@@ -82,9 +87,9 @@ class GameViewModel(
             if (activePlayers.size >= 10) return@launch
 
             val allPlayers = playerRepository.getAllPlayers()
-            val inactive = allPlayers.firstOrNull { !it.isActive }
-            if (inactive != null) {
-                playerRepository.setPlayerActive(inactive.id, true)
+            val firstInactive = allPlayers.firstOrNull { !it.isActive }
+            if (firstInactive != null) {
+                playerRepository.setPlayerActive(firstInactive.id, true)
             } else {
                 playerRepository.addPlayer("Player ${allPlayers.size + 1}".take(10))
             }
