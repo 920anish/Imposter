@@ -106,19 +106,31 @@ class CustomizeViewModel(
     }
 
     fun addPlayer(name: String) {
-        val trimmed = name.trim()
+        val trimmed = name.trim().take(10)
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
-            if (playerRepository.getActiveCount() >= 10) return@launch
+            val activeCount = playerRepository.getActiveCount()
+            if (activeCount >= 10) return@launch
             playerRepository.addPlayer(trimmed)
             appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
             refreshPlayers()
         }
     }
 
+    fun renamePlayer(playerId: Long, name: String) {
+        val trimmed = name.trim().take(10)
+        if (trimmed.isEmpty()) return
+        viewModelScope.launch {
+            playerRepository.renamePlayer(playerId, trimmed)
+            refreshPlayers()
+        }
+    }
+
     fun setPlayerActive(playerId: Long, active: Boolean) {
         viewModelScope.launch {
-            if (!active && playerRepository.getActiveCount() <= 3) return@launch
+            val activeCount = playerRepository.getActiveCount()
+            if (!active && activeCount <= 3) return@launch
+            if (active && activeCount >= 10) return@launch
             playerRepository.setPlayerActive(playerId, active)
             appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
             refreshPlayers()

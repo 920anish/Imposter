@@ -59,6 +59,17 @@ class PlayerRepository(
         playerDao.setActive(playerId, active)
     }
 
+    suspend fun renamePlayer(playerId: Long, name: String) = withContext(ioDispatcher) {
+        val trimmed = name.trim().take(10)
+        if (trimmed.isEmpty()) return@withContext
+
+        val duplicate = playerDao.getByNameExcludingId(trimmed, playerId)
+        if (duplicate != null) return@withContext
+
+        val current = playerDao.getById(playerId) ?: return@withContext
+        playerDao.update(current.copy(name = trimmed))
+    }
+
     suspend fun ensureDefaultPlayers() = withContext(ioDispatcher) {
         val allPlayers = playerDao.getAll()
         if (allPlayers.isNotEmpty()) return@withContext

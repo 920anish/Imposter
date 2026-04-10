@@ -53,6 +53,7 @@ fun AppNavigator(
                         backStack.add(RoleRevealRoute(0))
                     },
                     onCustomize = { backStack.add(CustomizeRoute) },
+                    onSettings = { backStack.add(SettingsRoute) },
                 )
             }
             entry<CustomizeRoute> {
@@ -69,7 +70,6 @@ fun AppNavigator(
                         viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))
                     },
-                    onOpenSettings = { backStack.add(SettingsRoute) },
                     onClose = { backStack.removeLastOrNull() },
                 )
             }

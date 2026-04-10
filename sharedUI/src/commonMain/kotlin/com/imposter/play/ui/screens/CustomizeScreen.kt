@@ -61,7 +61,6 @@ fun CustomizeScreen(
     config: GameConfig,
     onConfigChange: (GameConfig) -> Unit,
     onPlay: (GameConfig) -> Unit,
-    onOpenSettings: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CustomizeViewModel = koinInject(),
@@ -117,11 +116,6 @@ fun CustomizeScreen(
                     active = tab == "category",
                     modifier = Modifier.weight(1f),
                 ) { tab = "category" }
-                TabButton(
-                    text = "SETTINGS",
-                    active = false,
-                    modifier = Modifier.weight(1f),
-                ) { onOpenSettings() }
             }
             Spacer(Modifier.height(16.dp))
 
@@ -158,6 +152,9 @@ fun CustomizeScreen(
                             viewModel.addPlayer(name)
                             onConfigChange(config.copy(playerCount = (activeCount + 1).coerceAtMost(10)))
                         },
+                        onRenamePlayer = { playerId, updatedName ->
+                            viewModel.renamePlayer(playerId, updatedName)
+                        },
                     )
                 } else {
                     CategoryTabContent(
@@ -188,15 +185,9 @@ private fun PlayersTabContent(
     onTogglePlayer: (Long, Boolean) -> Unit,
     onDeletePlayer: (Long) -> Unit,
     onAddPlayer: (String) -> Unit,
+    onRenamePlayer: (Long, String) -> Unit,
 ) {
     val activeCount = players.count { it.isActive }
-    Text(
-        text = stringResource(Res.string.nav_customize_players_hint),
-        style = MaterialTheme.typography.labelMedium,
-        color = ColorMuted,
-        modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(6.dp))
     Text(
         text = "Active players: $activeCount / 10",
         style = MaterialTheme.typography.labelSmall,
@@ -205,6 +196,7 @@ private fun PlayersTabContent(
     )
     Spacer(Modifier.height(10.dp))
     players.forEachIndexed { index, player ->
+        val showActions = activeCount > 3
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -216,6 +208,7 @@ private fun PlayersTabContent(
             ) {
                 Text(text = "${index + 1}".padStart(2, '0'), color = ColorMuted)
             }
+            var editableName by remember(player.id, player.name) { mutableStateOf(player.name) }
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -225,94 +218,59 @@ private fun PlayersTabContent(
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
-                Text(
-                    text = player.name,
-                    color = if (player.isActive) ColorText else ColorMuted,
-                    style = MaterialTheme.typography.bodyMedium
+                BasicTextField(
+                    value = editableName,
+                    onValueChange = {
+                        editableName = it.take(10)
+                        onRenamePlayer(player.id, editableName)
+                    },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        color = if (player.isActive) ColorText else ColorMuted
+                    ),
+                    cursorBrush = androidx.compose.ui.graphics.SolidColor(ColorCrew),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
-            Box(
-                Modifier
-                    .size(44.dp)
-                    .border(
-                        1.dp,
-                        if (player.isActive) ColorCrew.copy(alpha = 0.6f) else ColorBorder
+            if (showActions) {
+                Box(
+                    Modifier
+                        .size(44.dp)
+                        .border(
+                            1.dp,
+                            if (player.isActive) ColorCrew.copy(alpha = 0.6f) else ColorBorder
+                        )
+                        .background(if (player.isActive) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                        .clickable { onTogglePlayer(player.id, !player.isActive) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = if (player.isActive) "ON" else "OFF",
+                        color = if (player.isActive) ColorCrew else ColorMuted,
+                        style = MaterialTheme.typography.labelSmall,
                     )
-                    .background(if (player.isActive) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                    .clickable(
-                        enabled = !(player.isActive && activeCount <= 3)
-                    ) { onTogglePlayer(player.id, !player.isActive) },
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = if (player.isActive) "ON" else "OFF",
-                    color = if (player.isActive) ColorCrew else ColorMuted,
-                    style = MaterialTheme.typography.labelSmall,
-                )
+                }
+                Box(
+                    Modifier.size(44.dp).border(1.dp, ColorBorder)
+                        .clickable { onDeletePlayer(player.id) },
+                    contentAlignment = Alignment.Center,
+                ) { Text("×", color = ColorMuted) }
             }
-            Box(
-                Modifier.size(44.dp).border(1.dp, ColorBorder)
-                    .clickable(enabled = !(player.isActive && activeCount <= 3)) { onDeletePlayer(player.id) },
-                contentAlignment = Alignment.Center,
-            ) { Text("×", color = ColorMuted) }
         }
         Spacer(Modifier.height(8.dp))
     }
     if (activeCount < 10) {
-        var newPlayerName by remember { mutableStateOf("") }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+        val nextPlayerNumber = players.size + 1
+        Box(
+            Modifier.fillMaxWidth().height(44.dp).border(1.dp, ColorBorder)
+                .clickable { onAddPlayer("Player $nextPlayerNumber") },
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(44.dp)
-                    .background(ColorSurface)
-                    .border(1.dp, ColorBorder)
-                    .padding(horizontal = 12.dp),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                BasicTextField(
-                    value = newPlayerName,
-                    onValueChange = { newPlayerName = it },
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = ColorText),
-                    cursorBrush = androidx.compose.ui.graphics.SolidColor(ColorCrew),
-                    modifier = Modifier.fillMaxWidth(),
-                    decorationBox = { innerTextField ->
-                        if (newPlayerName.isBlank()) {
-                            Text(
-                                "New player name",
-                                color = ColorMuted,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        innerTextField()
-                    },
-                )
-            }
-            Box(
-                Modifier
-                    .height(44.dp)
-                    .border(1.dp, ColorBorder)
-                    .padding(horizontal = 12.dp)
-                    .clickable {
-                        val name = newPlayerName.trim()
-                        if (name.isNotEmpty()) {
-                            onAddPlayer(name)
-                            newPlayerName = ""
-                        }
-                    },
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(Res.string.nav_customize_add_player),
-                    color = ColorMuted,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
+            Text(
+                text = "ADD",
+                color = ColorMuted,
+                style = MaterialTheme.typography.labelMedium,
+            )
         }
     }
 }

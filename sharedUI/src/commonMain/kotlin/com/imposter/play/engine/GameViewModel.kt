@@ -86,7 +86,7 @@ class GameViewModel(
             if (inactive != null) {
                 playerRepository.setPlayerActive(inactive.id, true)
             } else {
-                playerRepository.addPlayer("Player ${allPlayers.size + 1}")
+                playerRepository.addPlayer("Player ${allPlayers.size + 1}".take(10))
             }
             val updatedCount = playerRepository.getActiveCount().coerceIn(3, 10)
             _session.value = _session.value.copy(config = _session.value.config.copy(playerCount = updatedCount))

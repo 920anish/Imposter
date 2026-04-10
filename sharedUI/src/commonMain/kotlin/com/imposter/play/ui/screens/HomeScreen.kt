@@ -48,6 +48,7 @@ fun HomeScreen(
     onIncreasePlayers: () -> Unit,
     onPlayNow: (GameConfig) -> Unit,
     onCustomize: () -> Unit = {},
+    onSettings: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val playerCount = config.playerCount.coerceIn(3, 10)
@@ -90,13 +91,7 @@ fun HomeScreen(
                 style = MaterialTheme.typography.titleSmall,
                 color = ColorMuted,
             )
-            Spacer(Modifier.height(10.dp))
-            Text(
-                text = "Manage exact player activation/deactivation in Customize",
-                style = MaterialTheme.typography.labelSmall,
-                color = ColorMuted,
-                textAlign = TextAlign.Center,
-            )
+
             Spacer(Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 PickerStepButton(
@@ -136,6 +131,12 @@ fun HomeScreen(
             GhostButton(
                 text = stringResource(Res.string.nav_home_customize),
                 onClick = onCustomize,
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+            )
+            Spacer(Modifier.height(10.dp))
+            GhostButton(
+                text = "SETTINGS",
+                onClick = onSettings,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
             )
             // Bottom spacer for centering

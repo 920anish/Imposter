@@ -72,7 +72,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
             Text(
-                text = "GAME SETTINGS",
+                text = "SETTINGS",
                 color = ColorText,
                 style = MaterialTheme.typography.displayMedium
             )
