@@ -110,27 +110,40 @@ fun DiscussionScreen(
 
             MonoBadge(text = stringResource(Res.string.nav_discussion_title))
             Spacer(Modifier.height(20.dp))
-            Text(
-                text = "$minutes:${seconds.toString().padStart(2, '0')}",
-                style = MaterialTheme.typography.displayLarge,
-                color = timerColor.value,
-                modifier = Modifier.alpha(if (urgent) urgentAlpha.value else 1f),
-                textAlign = TextAlign.Center,
-            )
+            if (session.config.isTimerEnabled) {
+                Text(
+                    text = "$minutes:${seconds.toString().padStart(2, '0')}",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = timerColor.value,
+                    modifier = Modifier.alpha(if (urgent) urgentAlpha.value else 1f),
+                    textAlign = TextAlign.Center,
+                )
+            } else {
+                Text(
+                    text = "DISCUSS NOW",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = ColorText,
+                    textAlign = TextAlign.Center,
+                )
+            }
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(Res.string.nav_discussion_subtitle),
                 style = MaterialTheme.typography.bodySmall,
                 color = ColorMuted,
             )
-            Spacer(Modifier.height(16.dp))
-            GhostButton(
-                text = if (isRunning) stringResource(Res.string.nav_discussion_pause) else stringResource(
-                    Res.string.nav_discussion_resume
-                ),
-                onClick = onToggleTimer,
-            )
-            Spacer(Modifier.height(24.dp))
+            if (session.config.isTimerEnabled) {
+                Spacer(Modifier.height(16.dp))
+                GhostButton(
+                    text = if (isRunning) stringResource(Res.string.nav_discussion_pause) else stringResource(
+                        Res.string.nav_discussion_resume
+                    ),
+                    onClick = onToggleTimer,
+                )
+                Spacer(Modifier.height(24.dp))
+            } else {
+                Spacer(Modifier.height(12.dp))
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

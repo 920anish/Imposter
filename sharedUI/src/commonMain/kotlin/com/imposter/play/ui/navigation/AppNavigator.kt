@@ -59,13 +59,6 @@ fun AppNavigator(
             entry<CustomizeRoute> {
                 CustomizeScreen(
                     config = session.config,
-                    onConfigChange = { updated ->
-                        viewModel.onIntent(
-                            GameIntent.UpdateSetupConfig(
-                                updated
-                            )
-                        )
-                    },
                     onPlay = {
                         viewModel.onIntent(GameIntent.StartGame(it))
                         backStack.add(RoleRevealRoute(0))

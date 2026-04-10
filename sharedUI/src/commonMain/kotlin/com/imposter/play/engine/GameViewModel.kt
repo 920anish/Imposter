@@ -46,6 +46,7 @@ class GameViewModel(
 
     fun loadPrefs() {
         viewModelScope.launch {
+            StartupReadiness.isReady.value = false
             playerRepository.ensureDefaultPlayers()
             val settings = appPreferences.settings.first()
             _session.value = _session.value.copy(
@@ -61,6 +62,7 @@ class GameViewModel(
                     config = _session.value.config.copy(playerCount = activeCount)
                 )
                 appPreferences.setPlayerCount(activeCount)
+                StartupReadiness.isReady.value = true
             }
         }
     }

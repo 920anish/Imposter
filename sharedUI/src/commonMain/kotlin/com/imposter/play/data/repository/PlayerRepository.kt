@@ -36,9 +36,9 @@ class PlayerRepository(
     suspend fun getActiveCount(): Int = withContext(ioDispatcher){ playerDao.getActiveCount() }
 
     /**
-     * Add a new active player.
+     * Add a new player.
      */
-    suspend fun addPlayer(name: String): PlayerEntity = withContext(ioDispatcher)  {
+    suspend fun addPlayer(name: String, isActive: Boolean = true): PlayerEntity = withContext(ioDispatcher)  {
         val allPlayers = playerDao.getAll()
         val existingNames = allPlayers.map { it.name }.toSet()
         val requested = name.trim().take(10).ifBlank { "Player 1" }
@@ -57,7 +57,7 @@ class PlayerRepository(
 
         val newPlayer = PlayerEntity(
             name = finalName,
-            isActive = true,
+            isActive = isActive,
             lobbyOrder = (allPlayers.maxOfOrNull { it.lobbyOrder } ?: -1) + 1,
         )
         val id = playerDao.insert(newPlayer)

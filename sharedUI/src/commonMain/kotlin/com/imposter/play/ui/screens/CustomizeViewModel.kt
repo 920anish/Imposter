@@ -110,8 +110,7 @@ class CustomizeViewModel(
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
             val activeCount = playerRepository.getActiveCount()
-            if (activeCount >= 10) return@launch
-            playerRepository.addPlayer(trimmed)
+            playerRepository.addPlayer(trimmed, isActive = activeCount < 10)
             appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
             refreshPlayers()
         }
