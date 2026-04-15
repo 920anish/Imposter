@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
@@ -19,6 +20,7 @@ import com.imposter.play.ui.screens.ResultScreen
 import com.imposter.play.ui.screens.RoleRevealScreen
 import com.imposter.play.ui.screens.SettingsScreen
 import com.imposter.play.ui.screens.VoteScreen
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
@@ -27,6 +29,7 @@ fun AppNavigator(
 ) {
     val session by viewModel.session.collectAsState()
     val backStack = remember { mutableStateListOf<NavKey>(HomeRoute) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.loadPrefs()
@@ -57,8 +60,11 @@ fun AppNavigator(
                     onDecreasePlayers = { viewModel.onIntent(GameIntent.DecreasePlayerCount) },
                     onIncreasePlayers = { viewModel.onIntent(GameIntent.IncreasePlayerCount) },
                     onPlayNow = {
-                        viewModel.onIntent(GameIntent.StartGame(it))
-                        backStack.add(RoleRevealRoute(0))
+                        scope.launch {
+                            if (viewModel.startGameAndAwait(it)) {
+                                backStack.add(RoleRevealRoute(0))
+                            }
+                        }
                     },
                     onCustomize = { backStack.add(CustomizeRoute) },
                     onSettings = { backStack.add(SettingsRoute) },
@@ -68,8 +74,11 @@ fun AppNavigator(
                 CustomizeScreen(
                     config = session.config,
                     onPlay = {
-                        viewModel.onIntent(GameIntent.StartGame(it))
-                        backStack.add(RoleRevealRoute(0))
+                        scope.launch {
+                            if (viewModel.startGameAndAwait(it)) {
+                                backStack.add(RoleRevealRoute(0))
+                            }
+                        }
                     },
                     onClose = { backStack.removeLastOrNull() },
                 )

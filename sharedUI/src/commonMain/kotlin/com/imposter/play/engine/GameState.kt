@@ -35,6 +35,7 @@ data class GameSession(
     val votes: List<VoteCount> = emptyList(),
     val revealedPlayers: Set<Int> = emptySet(),
     val playerNames: List<String> = emptyList(),
+    val playerIds: List<Long> = emptyList(),
 ) {
     val normalizedPlayerNames: List<String>
         get() = playerNames.ifEmpty {
@@ -44,7 +45,11 @@ data class GameSession(
         }
 
     val winningPlayerIndex: Int?
-        get() = votes.maxByOrNull { it.votes }?.playerIndex
+        get() {
+            val maxVotes = votes.maxOfOrNull { it.votes } ?: return null
+            val leaders = votes.filter { it.votes == maxVotes }
+            return if (leaders.size == 1) leaders.first().playerIndex else null
+        }
 }
 
 

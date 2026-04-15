@@ -12,8 +12,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -27,13 +27,18 @@ class GameViewModel(
     val session: StateFlow<GameSession> = _session.asStateFlow()
 
     private var discussionTimerJob: Job? = null
+    private var activePlayersJob: Job? = null
 
     fun onIntent(intent: GameIntent) {
         when (intent) {
             is GameIntent.UpdateSetupConfig -> updateSetupConfig(intent.config)
             GameIntent.IncreasePlayerCount -> increasePlayerCount()
             GameIntent.DecreasePlayerCount -> decreasePlayerCount()
-            is GameIntent.StartGame -> startGame(intent.config)
+            is GameIntent.StartGame -> {
+                viewModelScope.launch {
+                    startGameInternal(intent.config)
+                }
+            }
             GameIntent.RevealCard -> revealCard()
             GameIntent.NextPlayer -> nextPlayer()
             GameIntent.ToggleTimer -> toggleTimer()
@@ -46,23 +51,33 @@ class GameViewModel(
 
     fun loadPrefs() {
         viewModelScope.launch {
-            StartupReadiness.isReady.value = false
             playerRepository.ensureDefaultPlayers()
+            val activeCount = playerRepository.getActiveCount().coerceIn(3, 10)
             val settings = appPreferences.settings.first()
             _session.value = _session.value.copy(
                 config = _session.value.config.copy(
+                    playerCount = activeCount,
                     difficulty = settings.difficulty.level,
                     imposterHintEnabled = settings.isHintEnabled,
                     isTimerEnabled = settings.isTimerEnabled,
                 )
             )
+            appPreferences.setPlayerCount(activeCount)
+            StartupReadiness.isReady.value = true
+            observeActivePlayers()
+        }
+    }
+
+    private fun observeActivePlayers() {
+        if (activePlayersJob != null) return
+        activePlayersJob = viewModelScope.launch {
             playerRepository.getActivePlayersFlow().collectLatest { activePlayers ->
+                val current = _session.value
+                if (current.state !is GameState.Idle) return@collectLatest
                 val activeCount = activePlayers.size.coerceIn(3, 10)
-                _session.value = _session.value.copy(
-                    config = _session.value.config.copy(playerCount = activeCount)
-                )
+                if (current.config.playerCount == activeCount) return@collectLatest
+                _session.value = current.copy(config = current.config.copy(playerCount = activeCount))
                 appPreferences.setPlayerCount(activeCount)
-                StartupReadiness.isReady.value = true
             }
         }
     }
@@ -95,9 +110,6 @@ class GameViewModel(
             } else {
                 playerRepository.addPlayer("Player ${allPlayers.size + 1}".take(10))
             }
-            val updatedCount = playerRepository.getActiveCount().coerceIn(3, 10)
-            _session.value = _session.value.copy(config = _session.value.config.copy(playerCount = updatedCount))
-            appPreferences.setPlayerCount(updatedCount)
         }
     }
 
@@ -108,47 +120,45 @@ class GameViewModel(
 
             val last = activePlayers.lastOrNull() ?: return@launch
             playerRepository.setPlayerActive(last.id, false)
-            val updatedCount = playerRepository.getActiveCount().coerceIn(3, 10)
-            _session.value = _session.value.copy(config = _session.value.config.copy(playerCount = updatedCount))
-            appPreferences.setPlayerCount(updatedCount)
         }
     }
 
-    private fun startGame(config: GameConfig) {
+    suspend fun startGameAndAwait(config: GameConfig): Boolean = startGameInternal(config)
+
+    private suspend fun startGameInternal(config: GameConfig): Boolean {
         val normalizedConfig = config.copy(
             playerCount = config.playerCount.coerceIn(3, 10),
             difficulty = config.difficulty.coerceIn(0, 2),
         )
 
-        viewModelScope.launch {
-            val settings = appPreferences.settings.first()
-            val activePlayers = playerRepository.getActivePlayers()
-            val playerNames = activePlayers.map { it.name }
+        val settings = appPreferences.settings.first()
+        val activePlayers = playerRepository.getActivePlayers()
+        val playerNames = activePlayers.map { it.name }
+        val playerIds = activePlayers.map { it.id }
+        val playerCount = playerNames.size.coerceIn(3, 10)
+        if (playerCount < 3) return false
 
-            val playerCount = playerNames.size.coerceIn(3, 10)
-            if (playerCount < 3) return@launch
+        val selectedWord = wordRepository.getRandomWord(
+            selectedCategoryIds = settings.selectedCategoryIds,
+            difficulty = normalizedConfig.difficulty,
+        ) ?: return false
 
-            // Get random word from repository (handles exclusion + marking as played)
-            val selectedWord = wordRepository.getRandomWord(
-                selectedCategoryIds = settings.selectedCategoryIds,
-                difficulty = normalizedConfig.difficulty,
-            ) ?: Word(real = "No words available", hint = "Check database")
+        val imposterIndex = Random.nextInt(until = playerCount)
+        discussionTimerJob?.cancel()
 
-            val imposterIndex = Random.nextInt(until = playerCount)
-            discussionTimerJob?.cancel()
+        _session.value = GameSession(
+            config = normalizedConfig.copy(playerCount = playerCount, isTimerEnabled = settings.isTimerEnabled),
+            state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
+            imposterIndex = imposterIndex,
+            currentWord = selectedWord,
+            votes = (0 until playerCount).map { VoteCount(it, 0) },
+            revealedPlayers = emptySet(),
+            playerNames = playerNames,
+            playerIds = playerIds,
+        )
 
-            _session.value = GameSession(
-                config = normalizedConfig.copy(playerCount = playerCount, isTimerEnabled = settings.isTimerEnabled),
-                state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
-                imposterIndex = imposterIndex,
-                currentWord = selectedWord,
-                votes = (0 until playerCount).map { VoteCount(it, 0) },
-                revealedPlayers = emptySet(),
-                playerNames = playerNames,
-            )
-
-            persistStartPreferences(normalizedConfig)
-        }
+        persistStartPreferences(normalizedConfig)
+        return true
     }
 
     private fun revealCard() {
@@ -249,16 +259,30 @@ class GameViewModel(
     private fun revealResult() {
         val current = _session.value
         if (current.state !is GameState.Voting) return
-        val caught = current.winningPlayerIndex == current.imposterIndex
+        val winner = current.winningPlayerIndex
+        val caught = winner != null && winner == current.imposterIndex
         _session.value = current.copy(
             state = GameState.Result(imposterCaught = caught),
         )
+        val imposterPlayerId = current.playerIds.getOrNull(current.imposterIndex) ?: return
+        val allPlayerIds = current.playerIds
+        viewModelScope.launch {
+            playerRepository.recordGameResults(
+                imposterWon = !caught,
+                imposterPlayerId = imposterPlayerId,
+                allPlayerIds = allPlayerIds,
+            )
+        }
     }
 
     private fun playAgain() {
         discussionTimerJob?.cancel()
         val preservedConfig = _session.value.config
-        _session.value = GameSession(config = preservedConfig)
+        _session.value = GameSession(
+            config = preservedConfig,
+            playerNames = _session.value.playerNames,
+            playerIds = _session.value.playerIds,
+        )
     }
 
     private fun persistStartPreferences(config: GameConfig) {
