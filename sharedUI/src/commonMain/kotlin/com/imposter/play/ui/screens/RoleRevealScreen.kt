@@ -66,10 +66,10 @@ fun RoleRevealScreen(
     onNext: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val revealState = session.state as? GameState.RoleReveal
-    val isCardRevealed = revealState?.isRevealed == true
+    val revealState = session.state as? GameState.RoleReveal ?: return
+    val isCardRevealed = revealState.isRevealed
     val playerName =
-        session.normalizedPlayerNames.getOrNull(revealState?.playerIndex ?: 0) ?: "Player 1"
+        session.normalizedPlayerNames.getOrNull(revealState.playerIndex) ?: "Player 1"
     val scrollState = rememberScrollState()
 
     Box(modifier = modifier.fillMaxSize()) {

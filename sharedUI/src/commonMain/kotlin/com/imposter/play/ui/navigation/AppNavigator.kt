@@ -35,11 +35,19 @@ fun AppNavigator(
     NavDisplay(
         backStack = backStack,
         onBack = {
-            if (backStack.size > 1) {
-                while (backStack.size > 1) {
-                    backStack.removeLastOrNull()
+            when (backStack.lastOrNull()) {
+                is RoleRevealRoute -> {
+                    // back from reveal = go home, reset
+                    viewModel.onIntent(GameIntent.PlayAgain)
+                    while (backStack.size > 1) backStack.removeLastOrNull()
                 }
-                viewModel.onIntent(GameIntent.PlayAgain)
+                is HomeRoute -> return@NavDisplay
+                is CustomizeRoute, is SettingsRoute -> backStack.removeLastOrNull()
+                else -> {
+                    // discussion, vote, result — back goes home
+                    viewModel.onIntent(GameIntent.PlayAgain)
+                    while (backStack.size > 1) backStack.removeLastOrNull()
+                }
             }
         },
         entryProvider = entryProvider {
@@ -83,8 +91,14 @@ fun AppNavigator(
                     onNext = {
                         viewModel.onIntent(GameIntent.NextPlayer)
                         when (val state = viewModel.session.value.state) {
-                            is GameState.RoleReveal -> backStack.add(RoleRevealRoute(state.playerIndex))
-                            is GameState.Discussion -> backStack.add(DiscussionRoute)
+                            is GameState.RoleReveal -> {
+                                backStack.removeLastOrNull() // remove current reveal
+                                backStack.add(RoleRevealRoute(state.playerIndex)) // replace with next
+                            }
+                            is GameState.Discussion -> {
+                                backStack.removeLastOrNull() // remove last reveal
+                                backStack.add(DiscussionRoute)
+                            }
                             else -> Unit
                         }
                     },
@@ -124,11 +138,11 @@ fun AppNavigator(
         },
     )
 
-    LaunchedEffect(session.state) {
-        if (session.state is GameState.Idle && backStack.lastOrNull() != HomeRoute) {
-            while (backStack.size > 1) {
-                backStack.removeLastOrNull()
-            }
-        }
-    }
+//    LaunchedEffect(session.state) {
+//        if (session.state is GameState.Idle && backStack.lastOrNull() != HomeRoute) {
+//            while (backStack.size > 1) {
+//                backStack.removeLastOrNull()
+//            }
+//        }
+//    }
 }
