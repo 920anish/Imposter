@@ -162,8 +162,6 @@ private fun RoleCard(role: PlayerRole) {
         accent = accent,
         accentDim = accentDim,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-        topInset = 8.dp,
-        bottomInset = 8.dp,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

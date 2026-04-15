@@ -10,7 +10,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,9 +27,7 @@ fun RoleRevealCard(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(24.dp),
     minHeight: Dp = 0.dp,
-    maxHeight: Dp = 430.dp,
-    topInset: Dp = 10.dp,
-    bottomInset: Dp = 10.dp,
+    maxHeight: Dp? = null,
     shadowRadius: Dp = 18.dp,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -48,17 +45,12 @@ fun RoleRevealCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = minHeight, max = maxHeight)
+            .heightIn(min = minHeight)
+            .let { base -> if (maxHeight != null) base.heightIn(max = maxHeight) else base }
             .shadow(shadowRadius, ambientColor = accent.copy(alpha = glowAlpha.value), spotColor = accent.copy(alpha = glowAlpha.value))
             .background(accentDim)
             .border(1.dp, accent),
     ) {
-        CornerBrackets(
-            color = accent,
-            modifier = Modifier.fillMaxSize(),
-            topInset = topInset,
-            bottomInset = bottomInset,
-        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
