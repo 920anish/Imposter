@@ -297,9 +297,11 @@ class GameViewModel(
         val current = _session.value
         val roleState = current.state as? GameState.RoleReveal ?: return PlayerRole.Unknown
         return if (roleState.playerIndex == current.imposterIndex) {
+            val hint = current.currentWord.hint.trim()
+            val hintEnabled = current.config.imposterHintEnabled && hint.isNotEmpty()
             PlayerRole.Imposter(
-                hint = current.currentWord.hint.ifBlank { "???" },
-                hintEnabled = current.config.imposterHintEnabled,
+                hint = hint,
+                hintEnabled = hintEnabled,
             )
         } else {
             PlayerRole.Crew(word = current.currentWord.real)

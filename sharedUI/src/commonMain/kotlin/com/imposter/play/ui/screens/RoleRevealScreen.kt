@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.imposter.play.engine.GameSession
 import com.imposter.play.engine.GameState
@@ -87,7 +88,7 @@ fun RoleRevealScreen(
             Spacer(Modifier.weight(1f))
 
             MonoBadge(
-                text = "${(revealState?.playerIndex ?: 0) + 1} / ${session.config.playerCount}",
+                text = "${revealState.playerIndex + 1} / ${session.config.playerCount}",
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(16.dp))
@@ -212,26 +213,16 @@ private fun RoleCard(role: PlayerRole) {
                 style = MaterialTheme.typography.headlineLarge,
                 color = ColorText,
                 textAlign = TextAlign.Center,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
             )
             Spacer(Modifier.height(14.dp))
-            Text(
-                text = if (isCrew) stringResource(Res.string.nav_role_crew_tip) else stringResource(
-                    Res.string.nav_role_imp_tip_1
-                ),
-                style = MaterialTheme.typography.labelSmall,
-                color = accent.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center,
-            )
-            if (!isCrew) {
-                Spacer(Modifier.height(6.dp))
+
+            if (isCrew) {
                 Text(
-                    text = if (role is PlayerRole.Imposter && !role.hintEnabled) {
-                        stringResource(Res.string.nav_role_imp_tip_no_hint)
-                    } else {
-                        stringResource(Res.string.nav_role_imp_tip_2)
-                    },
+                    text = stringResource(Res.string.nav_role_crew_tip),
                     style = MaterialTheme.typography.labelSmall,
-                    color = accent.copy(alpha = 0.7f),
+                    color = accent.copy(alpha = 0.8f),
                     textAlign = TextAlign.Center,
                 )
             }
