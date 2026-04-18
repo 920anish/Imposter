@@ -7,6 +7,7 @@ import com.imposter.play.data.Difficulty
 import com.imposter.play.data.GameSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 const val CATEGORY_ALL = "all"
@@ -19,6 +20,7 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
         val IS_TIMER_ENABLED = booleanPreferencesKey("is_timer_enabled")
         val SELECTED_CATEGORY_IDS = stringSetPreferencesKey("selected_category_ids")
         val HINTS_ENABLED = booleanPreferencesKey("hints_enabled")
+        val WORD_CATALOG_VERSION = intPreferencesKey("word_catalog_version")
     }
 
     // Default is "all" so new users start with the full Random experience.
@@ -62,5 +64,16 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setHintsEnabled(enabled: Boolean) {
         dataStore.edit { it[Keys.HINTS_ENABLED] = enabled }
+    }
+
+    suspend fun getWordCatalogVersion(): Int? = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) emit(emptyPreferences()) else throw exception
+        }
+        .map { prefs -> prefs[Keys.WORD_CATALOG_VERSION] }
+        .first()
+
+    suspend fun setWordCatalogVersion(version: Int) {
+        dataStore.edit { it[Keys.WORD_CATALOG_VERSION] = version.coerceAtLeast(1) }
     }
 }

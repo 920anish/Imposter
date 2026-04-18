@@ -6,6 +6,7 @@ import com.imposter.play.data.Difficulty
 import com.imposter.play.data.Word
 import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.repository.PlayerRepository
+import com.imposter.play.data.repository.WordCatalogUpdater
 import com.imposter.play.data.repository.WordRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,6 +22,7 @@ class GameViewModel(
     private val appPreferences: AppPreferences,
     private val wordRepository: WordRepository,
     private val playerRepository: PlayerRepository,
+    private val wordCatalogUpdater: WordCatalogUpdater,
 ) : ViewModel() {
 
     private val _session = MutableStateFlow(GameSession())
@@ -51,6 +53,7 @@ class GameViewModel(
 
     fun loadPrefs() {
         viewModelScope.launch {
+            wordCatalogUpdater.applyPendingUpdates()
             playerRepository.ensureDefaultPlayers()
             val activeCount = playerRepository.getActiveCount().coerceIn(3, 10)
             val settings = appPreferences.settings.first()

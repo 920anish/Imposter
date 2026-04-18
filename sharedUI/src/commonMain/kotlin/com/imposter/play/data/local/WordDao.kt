@@ -54,6 +54,21 @@ interface WordDao {
     @Query("SELECT * FROM words WHERE id = :id")
     suspend fun getById(id: Long): WordEntity?
 
+    @Query(
+        """
+        SELECT * FROM words
+        WHERE categoryId = :categoryId
+        AND text = :text
+        AND difficultyLevel = :difficultyLevel
+        LIMIT 1
+        """
+    )
+    suspend fun findByNaturalKey(
+        categoryId: String,
+        text: String,
+        difficultyLevel: Int,
+    ): WordEntity?
+
     @Query("SELECT COUNT(*) FROM words WHERE categoryId = :categoryId")
     suspend fun getCountByCategory(categoryId: String): Int
 
@@ -68,4 +83,7 @@ interface WordDao {
 
     @Query("DELETE FROM words WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("UPDATE words SET hint = :hint WHERE id = :id")
+    suspend fun updateHintById(id: Long, hint: String?)
 }
