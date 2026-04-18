@@ -211,8 +211,6 @@ private fun RoleCard(role: PlayerRole) {
                 style = MaterialTheme.typography.headlineLarge,
                 color = ColorText,
                 textAlign = TextAlign.Center,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
             )
             Spacer(Modifier.height(14.dp))
 
