@@ -2,11 +2,9 @@ package com.imposter.play.engine
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imposter.play.data.Difficulty
-import com.imposter.play.data.Word
 import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.repository.PlayerRepository
-import com.imposter.play.data.repository.WordCatalogUpdater
+import com.imposter.play.data.local.WordCatalogUpdater
 import com.imposter.play.data.repository.WordRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

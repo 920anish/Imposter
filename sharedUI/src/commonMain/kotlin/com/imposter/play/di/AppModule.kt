@@ -4,7 +4,7 @@ import com.imposter.play.data.local.AppDatabase
 import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.repository.CategoryRepository
 import com.imposter.play.data.repository.PlayerRepository
-import com.imposter.play.data.repository.WordCatalogUpdater
+import com.imposter.play.data.local.WordCatalogUpdater
 import com.imposter.play.data.repository.WordRepository
 import com.imposter.play.engine.GameViewModel
 import com.imposter.play.ui.screens.CustomizeViewModel

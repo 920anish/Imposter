@@ -8,6 +8,7 @@ import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.local.CATEGORY_ALL
 import com.imposter.play.data.repository.CategoryRepository
 import com.imposter.play.data.repository.PlayerRepository
+import com.imposter.play.engine.Difficulty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -87,7 +88,7 @@ class CustomizeViewModel(
     fun setDifficulty(level: Int) {
         _uiState.value = _uiState.value.copy(difficulty = level)
         viewModelScope.launch {
-            appPreferences.setDifficulty(com.imposter.play.data.Difficulty.fromInt(level))
+            appPreferences.setDifficulty(Difficulty.fromInt(level))
         }
     }
 

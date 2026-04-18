@@ -1,7 +1,7 @@
 package com.imposter.play.data.repository
 
 import com.imposter.play.data.entities.PlayerEntity
-import com.imposter.play.data.local.PlayerDao
+import com.imposter.play.data.local.dao.PlayerDao
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

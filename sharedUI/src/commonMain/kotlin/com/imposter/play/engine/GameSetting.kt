@@ -1,4 +1,4 @@
-package com.imposter.play.data
+package com.imposter.play.engine
 
 
 enum class Difficulty(val level: Int) {

@@ -10,6 +10,10 @@ import com.imposter.play.data.entities.CategoryEntity
 import com.imposter.play.data.entities.PlayedHistoryEntity
 import com.imposter.play.data.entities.PlayerEntity
 import com.imposter.play.data.entities.WordEntity
+import com.imposter.play.data.local.dao.CategoryDao
+import com.imposter.play.data.local.dao.PlayedHistoryDao
+import com.imposter.play.data.local.dao.PlayerDao
+import com.imposter.play.data.local.dao.WordDao
 
 @Database(
     entities = [

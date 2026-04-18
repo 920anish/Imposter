@@ -1,6 +1,6 @@
 package com.imposter.play.engine
 
-import com.imposter.play.data.Word
+import com.imposter.play.engine.Word
 
 sealed class GameState {
     data object Idle : GameState()

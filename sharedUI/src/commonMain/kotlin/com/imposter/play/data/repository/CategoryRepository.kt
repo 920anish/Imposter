@@ -1,7 +1,7 @@
 package com.imposter.play.data.repository
 
 import com.imposter.play.data.entities.CategoryEntity
-import com.imposter.play.data.local.CategoryDao
+import com.imposter.play.data.local.dao.CategoryDao
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

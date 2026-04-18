@@ -1,10 +1,10 @@
 package com.imposter.play.data.repository
 
-import com.imposter.play.data.Word
+import com.imposter.play.engine.Word
 import com.imposter.play.data.entities.PlayedHistoryEntity
 import com.imposter.play.data.local.CATEGORY_ALL
-import com.imposter.play.data.local.PlayedHistoryDao
-import com.imposter.play.data.local.WordDao
+import com.imposter.play.data.local.dao.PlayedHistoryDao
+import com.imposter.play.data.local.dao.WordDao
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
@@ -46,10 +46,4 @@ class WordRepository(
         }
     }
 
-    /**
-     * Clear played history (for testing/reset)
-     */
-    suspend fun clearHistory()  = withContext(ioDispatcher){
-        playedHistoryDao.clearAll()
-    }
 }

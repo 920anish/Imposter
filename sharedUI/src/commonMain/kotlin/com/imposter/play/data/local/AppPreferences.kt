@@ -3,8 +3,8 @@ package com.imposter.play.data.local
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.*
-import com.imposter.play.data.Difficulty
-import com.imposter.play.data.GameSettings
+import com.imposter.play.engine.Difficulty
+import com.imposter.play.engine.GameSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
