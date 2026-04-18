@@ -107,13 +107,6 @@ class PlayerRepository(
     }
 
     /**
-     * Record game result for a player
-     */
-    suspend fun recordGameResult(playerId: Long, won: Boolean)  = withContext(ioDispatcher){
-        playerDao.recordGameResult(playerId, won)
-    }
-
-    /**
      * Record game results for all players
      * @param imposterWon true if imposter won, false if crew won
      * @param imposterPlayerId the player who was the imposter

@@ -9,10 +9,11 @@ import com.imposter.play.data.local.CATEGORY_ALL
 import com.imposter.play.data.repository.CategoryRepository
 import com.imposter.play.data.repository.PlayerRepository
 import com.imposter.play.engine.Difficulty
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class CustomizeUiState(
@@ -35,24 +36,28 @@ class CustomizeViewModel(
     val uiState: StateFlow<CustomizeUiState> = _uiState.asStateFlow()
 
     init {
-        loadData()
+        observeData()
     }
 
-    private fun loadData() {
+    private fun observeData() {
         viewModelScope.launch {
-            val categories = categoryRepository.getAllCategories()
-            val settings = appPreferences.settings.first()
-            val players = playerRepository.getAllPlayers()
-
-            _uiState.value = CustomizeUiState(
-                categories = categories,
-                players = players,
-                selectedCategoryIds = settings.selectedCategoryIds.ifEmpty { setOf(CATEGORY_ALL) },
-                difficulty = settings.difficulty.level,
-                imposterHintEnabled = settings.isHintEnabled,
-                isTimerEnabled = settings.isTimerEnabled,
-                isLoading = false,
-            )
+            combine(
+                categoryRepository.getAllCategoriesFlow(),
+                playerRepository.getAllPlayersFlow(),
+                appPreferences.settings,
+            ) { categories, players, settings ->
+                CustomizeUiState(
+                    categories = categories,
+                    players = players,
+                    selectedCategoryIds = settings.selectedCategoryIds.ifEmpty { setOf(CATEGORY_ALL) },
+                    difficulty = settings.difficulty.level,
+                    imposterHintEnabled = settings.isHintEnabled,
+                    isTimerEnabled = settings.isTimerEnabled,
+                    isLoading = false,
+                )
+            }.collectLatest { state ->
+                _uiState.value = state
+            }
         }
     }
 
@@ -78,29 +83,24 @@ class CustomizeViewModel(
             }
         }
         
-        _uiState.value = _uiState.value.copy(selectedCategoryIds = current)
-        
         viewModelScope.launch {
             appPreferences.setSelectedCategories(current)
         }
     }
 
     fun setDifficulty(level: Int) {
-        _uiState.value = _uiState.value.copy(difficulty = level)
         viewModelScope.launch {
             appPreferences.setDifficulty(Difficulty.fromInt(level))
         }
     }
 
     fun setHintEnabled(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(imposterHintEnabled = enabled)
         viewModelScope.launch {
             appPreferences.setHintsEnabled(enabled)
         }
     }
 
     fun setTimerEnabled(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(isTimerEnabled = enabled)
         viewModelScope.launch {
             appPreferences.setTimerEnabled(enabled)
         }
@@ -113,7 +113,6 @@ class CustomizeViewModel(
             val activeCount = playerRepository.getActiveCount()
             playerRepository.addPlayer(trimmed, isActive = activeCount < 10)
             appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
-            refreshPlayers()
         }
     }
 
@@ -122,7 +121,6 @@ class CustomizeViewModel(
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
             playerRepository.renamePlayer(playerId, trimmed)
-            refreshPlayers()
         }
     }
 
@@ -133,7 +131,6 @@ class CustomizeViewModel(
             if (active && activeCount >= 10) return@launch
             playerRepository.setPlayerActive(playerId, active)
             appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
-            refreshPlayers()
         }
     }
 
@@ -143,7 +140,6 @@ class CustomizeViewModel(
             if (player?.isActive == true && playerRepository.getActiveCount() <= 3) return@launch
             playerRepository.deletePlayer(playerId)
             appPreferences.setPlayerCount(playerRepository.getActiveCount().coerceIn(3, 10))
-            refreshPlayers()
         }
     }
 
@@ -152,12 +148,6 @@ class CustomizeViewModel(
             orderedPlayerIds.forEachIndexed { index, playerId ->
                 playerRepository.updateLobbyOrder(playerId, index)
             }
-            refreshPlayers()
         }
-    }
-
-    private suspend fun refreshPlayers() {
-        val players = playerRepository.getAllPlayers()
-        _uiState.value = _uiState.value.copy(players = players)
     }
 }

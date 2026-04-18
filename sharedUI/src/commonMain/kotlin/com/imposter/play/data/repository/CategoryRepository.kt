@@ -16,23 +16,6 @@ class CategoryRepository(
     fun getAllCategoriesFlow(): Flow<List<CategoryEntity>> = categoryDao.getAllFlow()
 
     /**
-     * Get all categories
-     */
-    suspend fun getAllCategories(): List<CategoryEntity> = withContext(ioDispatcher){ categoryDao.getAll() }
-
-    /**
-     * Get only enabled categories
-     */
-    suspend fun getEnabledCategories(): List<CategoryEntity> = withContext(ioDispatcher){ categoryDao.getEnabled() }
-
-    /**
-     * Toggle category enabled state
-     */
-    suspend fun toggleCategory(categoryId: String, enabled: Boolean) = withContext(ioDispatcher) {
-        categoryDao.setEnabled(categoryId, enabled)
-    }
-
-    /**
      * Add a custom category
      */
     suspend fun addCustomCategory(
