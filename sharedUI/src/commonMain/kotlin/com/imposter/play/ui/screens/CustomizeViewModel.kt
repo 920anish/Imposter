@@ -63,6 +63,7 @@ class CustomizeViewModel(
 
     fun toggleCategory(categoryId: String) {
         val current = _uiState.value.selectedCategoryIds.toMutableSet()
+        val allCategoryIds = _uiState.value.categories.map { it.id }.toSet()
         
         if (categoryId == CATEGORY_ALL) {
             // Selecting "All" clears other selections
@@ -80,6 +81,10 @@ class CustomizeViewModel(
                 }
             } else {
                 current.add(categoryId)
+                if (allCategoryIds.isNotEmpty() && current.containsAll(allCategoryIds)) {
+                    current.clear()
+                    current.add(CATEGORY_ALL)
+                }
             }
         }
         
@@ -146,6 +151,15 @@ class CustomizeViewModel(
     fun reorderPlayers(orderedPlayerIds: List<Long>) {
         viewModelScope.launch {
             orderedPlayerIds.forEachIndexed { index, playerId ->
+                playerRepository.updateLobbyOrder(playerId, index)
+            }
+        }
+    }
+
+    fun randomizePlayers() {
+        viewModelScope.launch {
+            val shuffledIds = _uiState.value.players.shuffled().map { it.id }
+            shuffledIds.forEachIndexed { index, playerId ->
                 playerRepository.updateLobbyOrder(playerId, index)
             }
         }

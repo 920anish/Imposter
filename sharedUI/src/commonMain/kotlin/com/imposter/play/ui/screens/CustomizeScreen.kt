@@ -47,6 +47,7 @@ import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_customize_play
 import imposter.sharedui.generated.resources.nav_customize_random
+import imposter.sharedui.generated.resources.nav_customize_randomize_players
 import imposter.sharedui.generated.resources.nav_customize_tab_category
 import imposter.sharedui.generated.resources.nav_customize_tab_players
 import imposter.sharedui.generated.resources.nav_customize_title
@@ -127,6 +128,7 @@ fun CustomizeScreen(
                     onAddPlayer = viewModel::addPlayer,
                     onRenamePlayer = viewModel::renamePlayer,
                     onReorderPlayers = viewModel::reorderPlayers,
+                    onRandomizePlayers = viewModel::randomizePlayers,
                     modifier = Modifier.weight(1f)
                 )
             } else {
@@ -159,6 +161,7 @@ private fun PlayersTabContent(
     onAddPlayer: (String) -> Unit,
     onRenamePlayer: (Long, String) -> Unit,
     onReorderPlayers: (List<Long>) -> Unit,
+    onRandomizePlayers: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -298,17 +301,33 @@ private fun PlayersTabContent(
             item {
                 Spacer(Modifier.height(14.dp))
 
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .border(1.dp, ColorBorder)
-                        .clickable {
-                            onAddPlayer("Player ${orderedPlayers.size + 1}")
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("ADD", color = ColorMuted)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                            .border(1.dp, ColorBorder)
+                            .clickable { onRandomizePlayers() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(Res.string.nav_customize_randomize_players),
+                            color = ColorMuted,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                            .border(1.dp, ColorBorder)
+                            .clickable {
+                                onAddPlayer("Player ${orderedPlayers.size + 1}")
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("ADD", color = ColorMuted)
+                    }
                 }
             }
         }

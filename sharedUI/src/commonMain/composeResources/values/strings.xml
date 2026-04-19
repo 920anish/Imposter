@@ -22,6 +22,7 @@
     <string name="nav_customize_hard">HARD</string>
     <string name="nav_customize_category">CATEGORY</string>
     <string name="nav_customize_random">ALL</string>
+    <string name="nav_customize_randomize_players">RANDOMIZE</string>
     <string name="nav_customize_play">PLAY</string>
     <string name="nav_customize_close">CLOSE</string>
     <string name="nav_screen_shell_ready">Screen shell ready</string>
