@@ -47,9 +47,11 @@ import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_discussion_pause
 import imposter.sharedui.generated.resources.nav_discussion_players
 import imposter.sharedui.generated.resources.nav_discussion_resume
+import imposter.sharedui.generated.resources.nav_discussion_skip_result
 import imposter.sharedui.generated.resources.nav_discussion_subtitle
 import imposter.sharedui.generated.resources.nav_discussion_title
 import imposter.sharedui.generated.resources.nav_discussion_vote_now
+import imposter.sharedui.generated.resources.nav_result_play_again
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -57,6 +59,8 @@ fun DiscussionScreen(
     session: GameSession,
     onToggleTimer: () -> Unit,
     onVoteNow: () -> Unit,
+    onSkipToResult: () -> Unit,
+    onPlayAgain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val discussion = session.state as? GameState.Discussion
@@ -182,6 +186,16 @@ fun DiscussionScreen(
             DangerButton(
                 text = stringResource(Res.string.nav_discussion_vote_now),
                 onClick = onVoteNow,
+            )
+            Spacer(Modifier.height(10.dp))
+            GhostButton(
+                text = stringResource(Res.string.nav_discussion_skip_result),
+                onClick = onSkipToResult,
+            )
+            Spacer(Modifier.height(10.dp))
+            GhostButton(
+                text = stringResource(Res.string.nav_result_play_again),
+                onClick = onPlayAgain,
             )
 
             // Bottom spacer for centering

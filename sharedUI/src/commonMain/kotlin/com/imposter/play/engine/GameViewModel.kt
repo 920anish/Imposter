@@ -46,6 +46,7 @@ class GameViewModel(
             GameIntent.StartVoting -> startVoting()
             is GameIntent.CastVote -> castVote(intent.playerIndex)
             GameIntent.RevealResult -> revealResult()
+            GameIntent.SkipToResult -> skipToResult()
             GameIntent.PlayAgain -> playAgain()
         }
     }
@@ -275,14 +276,25 @@ class GameViewModel(
         if (current.state !is GameState.Voting) return
         val winner = current.winningPlayerIndex
         val caught = winner != null && winner == current.imposterIndex
+        publishResult(current, imposterCaught = caught)
+    }
+
+    private fun skipToResult() {
+        val current = _session.value
+        if (current.state !is GameState.Discussion && current.state !is GameState.Voting) return
+        discussionTimerJob?.cancel()
+        publishResult(current, imposterCaught = false)
+    }
+
+    private fun publishResult(current: GameSession, imposterCaught: Boolean) {
         _session.value = current.copy(
-            state = GameState.Result(imposterCaught = caught),
+            state = GameState.Result(imposterCaught = imposterCaught),
         )
         val imposterPlayerId = current.playerIds.getOrNull(current.imposterIndex) ?: return
         val allPlayerIds = current.playerIds
         viewModelScope.launch {
             playerRepository.recordGameResults(
-                imposterWon = !caught,
+                imposterWon = !imposterCaught,
                 imposterPlayerId = imposterPlayerId,
                 allPlayerIds = allPlayerIds,
             )

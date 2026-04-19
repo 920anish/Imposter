@@ -150,7 +150,6 @@ fun VoteScreen(
             DangerButton(
                 text = stringResource(Res.string.nav_vote_reveal),
                 onClick = onReveal,
-                enabled = totalVotes > 0,
             )
 
             // Bottom spacer for centering when content fits

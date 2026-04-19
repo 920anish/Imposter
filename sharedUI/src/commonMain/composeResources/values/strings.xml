@@ -52,6 +52,7 @@
     <string name="nav_discussion_resume">RESUME</string>
     <string name="nav_discussion_subtitle">discuss · debate · deduce</string>
     <string name="nav_discussion_players">PLAYERS IN GAME</string>
+    <string name="nav_discussion_skip_result">SKIP TO RESULT</string>
     <string name="nav_vote_title">FINAL VOTE</string>
     <string name="nav_vote_headline">WHO'S THE IMPOSTER?</string>
     <string name="nav_vote_cast">votes cast · tap to vote</string>

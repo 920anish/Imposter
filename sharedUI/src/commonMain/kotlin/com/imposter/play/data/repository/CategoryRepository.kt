@@ -75,13 +75,6 @@ class CategoryRepository(
         if (deleted > 0) CategoryMutationResult.Success else CategoryMutationResult.NotFound
     }
 
-    /**
-     * Update word count for a category
-     */
-    suspend fun updateWordCount(categoryId: String, count: Int) = withContext(ioDispatcher){
-        categoryDao.updateWordCount(categoryId, count)
-    }
-
     private fun buildCustomCategoryId(name: String): String {
         val slug = name
             .lowercase()

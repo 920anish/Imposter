@@ -11,5 +11,6 @@ sealed class GameIntent {
     data object StartVoting : GameIntent()
     data class CastVote(val playerIndex: Int) : GameIntent()
     data object RevealResult : GameIntent()
+    data object SkipToResult : GameIntent()
     data object PlayAgain : GameIntent()
 }

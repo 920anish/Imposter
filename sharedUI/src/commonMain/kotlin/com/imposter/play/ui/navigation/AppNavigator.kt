@@ -128,6 +128,16 @@ fun AppNavigator(
                         viewModel.onIntent(GameIntent.StartVoting)
                         backStack.add(VoteRoute)
                     },
+                    onSkipToResult = {
+                        viewModel.onIntent(GameIntent.SkipToResult)
+                        backStack.add(ResultRoute)
+                    },
+                    onPlayAgain = {
+                        viewModel.onIntent(GameIntent.PlayAgain)
+                        while (backStack.size > 1) {
+                            backStack.removeLastOrNull()
+                        }
+                    },
                 )
             }
             entry<VoteRoute> {
