@@ -5,8 +5,10 @@ package com.imposter.play.data.local
 import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.AutoMigration
+import androidx.room3.DeleteColumn
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
+import androidx.room3.migration.AutoMigrationSpec
 import com.imposter.play.data.entities.CategoryEntity
 import com.imposter.play.data.entities.PlayedHistoryEntity
 import com.imposter.play.data.entities.PlayerEntity
@@ -23,10 +25,11 @@ import com.imposter.play.data.local.dao.WordDao
         PlayerEntity::class,
         PlayedHistoryEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3, spec = AppDatabaseMigration2To3::class),
     ],
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -40,6 +43,10 @@ abstract class AppDatabase : RoomDatabase() {
         const val DATABASE_NAME = "imposter.db"
     }
 }
+
+@DeleteColumn(tableName = "categories", columnName = "isEnabled")
+@DeleteColumn(tableName = "players", columnName = "avatarRes")
+class AppDatabaseMigration2To3 : AutoMigrationSpec
 
 // Room KSP generates the actual implementation for KMP
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {

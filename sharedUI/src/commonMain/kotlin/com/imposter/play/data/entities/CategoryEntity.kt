@@ -10,7 +10,7 @@ import androidx.room3.PrimaryKey
 @Entity(
     tableName = "categories",
     indices = [
-        Index(value = ["isEnabled", "displayOrder"])
+        Index(value = ["displayOrder"])
     ]
 )
 data class CategoryEntity(
@@ -18,7 +18,6 @@ data class CategoryEntity(
     val id: String,
     val name: String,
     val iconRes: String,
-    val isEnabled: Boolean = true,
     val displayOrder: Int = 0,
     val isCustom: Boolean = false,
     val wordCount: Int = 0

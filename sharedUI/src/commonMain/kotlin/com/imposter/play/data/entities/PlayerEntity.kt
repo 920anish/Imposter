@@ -18,8 +18,6 @@ data class PlayerEntity(
 
     val name: String,
 
-    val avatarRes: String = "default_avatar",
-
     val isActive: Boolean = true,
 
     val lobbyOrder: Int = 0,

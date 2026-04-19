@@ -55,7 +55,6 @@ class CategoryRepository(
                 id = generatedId,
                 name = normalizedName,
                 iconRes = "custom_category",
-                isEnabled = true,
                 displayOrder = nextDisplayOrder,
                 isCustom = true,
                 wordCount = 0,

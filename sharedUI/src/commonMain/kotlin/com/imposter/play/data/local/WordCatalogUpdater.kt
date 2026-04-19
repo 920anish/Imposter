@@ -80,7 +80,6 @@ class WordCatalogUpdater(
                     id = seed.id,
                     name = normalizedName,
                     iconRes = normalizedIcon,
-                    isEnabled = true,
                     displayOrder = seed.displayOrder,
                     isCustom = false,
                     wordCount = 0,

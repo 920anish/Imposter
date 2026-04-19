@@ -18,9 +18,6 @@ interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY displayOrder ASC")
     suspend fun getAll(): List<CategoryEntity>
 
-    @Query("SELECT * FROM categories WHERE isEnabled = 1 ORDER BY displayOrder ASC")
-    suspend fun getEnabled(): List<CategoryEntity>
-
     @Query("SELECT * FROM categories WHERE id IN (:ids)")
     suspend fun getByIds(ids: Set<String>): List<CategoryEntity>
 
@@ -51,6 +48,4 @@ interface CategoryDao {
     @Query("UPDATE categories SET wordCount = :count WHERE id = :categoryId")
     suspend fun updateWordCount(categoryId: String, count: Int)
 
-    @Query("UPDATE categories SET isEnabled = :enabled WHERE id = :categoryId")
-    suspend fun setEnabled(categoryId: String, enabled: Boolean)
 }
