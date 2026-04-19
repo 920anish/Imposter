@@ -6,6 +6,8 @@
     <string name="nav_home_default_names">default names: Player 1 – Player %1$s</string>
     <string name="nav_home_play_now">PLAY NOW</string>
     <string name="nav_home_customize">CUSTOMIZE GAME</string>
+    <string name="nav_home_add_words">ADD WORDS</string>
+    <string name="nav_home_settings">SETTINGS</string>
     <string name="nav_customize_title">CUSTOMIZE</string>
     <string name="nav_customize_tab_players">PLAYERS</string>
     <string name="nav_customize_tab_category">CATEGORY</string>
@@ -19,7 +21,7 @@
     <string name="nav_customize_medium">MEDIUM</string>
     <string name="nav_customize_hard">HARD</string>
     <string name="nav_customize_category">CATEGORY</string>
-    <string name="nav_customize_random">RANDOM</string>
+    <string name="nav_customize_random">ALL</string>
     <string name="nav_customize_play">PLAY</string>
     <string name="nav_customize_close">CLOSE</string>
     <string name="nav_screen_shell_ready">Screen shell ready</string>
@@ -66,4 +68,39 @@
     <string name="nav_result_their_hint">THEIR HINT</string>
     <string name="nav_result_vote_results">VOTE RESULTS</string>
     <string name="nav_result_vote_count">%1$s vote%2$s</string>
+
+    <string name="nav_add_words_title">ADD WORDS</string>
+    <string name="nav_add_words_words_tab">WORDS</string>
+    <string name="nav_add_words_categories_tab">CATEGORIES</string>
+    <string name="nav_add_words_history_tab">HISTORY</string>
+    <string name="nav_add_words_word">WORD</string>
+    <string name="nav_add_words_word_placeholder">Enter the word</string>
+    <string name="nav_add_words_hint">HINT (OPTIONAL)</string>
+    <string name="nav_add_words_hint_placeholder">Add a hint for the imposter</string>
+    <string name="nav_add_words_difficulty">DIFFICULTY</string>
+    <string name="nav_add_words_category">CATEGORY</string>
+    <string name="nav_add_words_custom_categories">CUSTOM CATEGORIES</string>
+    <string name="nav_add_words_category_name_placeholder">New category name</string>
+    <string name="nav_add_words_add_category">ADD</string>
+    <string name="nav_add_words_add">ADD WORD</string>
+    <string name="nav_add_words_save">SAVE CHANGES</string>
+    <string name="nav_add_words_cancel_edit">CANCEL EDIT</string>
+    <string name="nav_add_words_custom_words">CUSTOM WORDS</string>
+    <string name="nav_add_words_empty">No custom words yet.</string>
+    <string name="nav_add_words_empty_custom_categories">No custom categories yet.</string>
+    <string name="nav_add_words_edit">EDIT</string>
+    <string name="nav_add_words_delete">DELETE</string>
+    <string name="nav_add_words_error_no_category">Select a category first.</string>
+    <string name="nav_add_words_error_invalid">Word and category are required.</string>
+    <string name="nav_add_words_error_duplicate">That word already exists in this category and difficulty.</string>
+    <string name="nav_add_words_error_not_found">Word not found. Try refreshing the screen.</string>
+    <string name="nav_add_words_error_category_invalid">Category name is required.</string>
+    <string name="nav_add_words_error_category_duplicate">Category already exists.</string>
+    <string name="nav_add_words_error_category_in_use">Delete words in this category first.</string>
+    <string name="nav_add_words_error_category_not_found">Category not found.</string>
+    <string name="nav_add_words_word_added">Custom word added.</string>
+    <string name="nav_add_words_updated">Custom word updated.</string>
+    <string name="nav_add_words_deleted">Custom word deleted.</string>
+    <string name="nav_add_words_category_added">Custom category added.</string>
+    <string name="nav_add_words_category_deleted">Custom category deleted.</string>
 </resources>

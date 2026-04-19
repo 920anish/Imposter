@@ -5,6 +5,7 @@ import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 import androidx.room3.ForeignKey
 import androidx.room3.Index
+import androidx.room3.ColumnInfo
 
 @Entity(
     tableName = "words",
@@ -31,5 +32,8 @@ data class WordEntity(
 
     val categoryId: String,
 
-    val difficultyLevel: Int
+    val difficultyLevel: Int,
+
+    @ColumnInfo(defaultValue = "0")
+    val isCustom: Boolean = false,
 )

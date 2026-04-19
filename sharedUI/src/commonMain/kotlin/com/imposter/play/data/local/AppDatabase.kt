@@ -4,6 +4,7 @@ package com.imposter.play.data.local
 
 import androidx.room3.ConstructedBy
 import androidx.room3.Database
+import androidx.room3.AutoMigration
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import com.imposter.play.data.entities.CategoryEntity
@@ -22,8 +23,11 @@ import com.imposter.play.data.local.dao.WordDao
         PlayerEntity::class,
         PlayedHistoryEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

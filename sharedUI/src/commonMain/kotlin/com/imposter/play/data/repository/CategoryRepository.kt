@@ -6,6 +6,19 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
+enum class CategoryMutationResult {
+    Success,
+    InvalidInput,
+    Duplicate,
+    InUse,
+    NotFound,
+}
+
+data class CategoryMutationOutcome(
+    val result: CategoryMutationResult,
+    val categoryId: String? = null,
+)
+
 class CategoryRepository(
     private val categoryDao: CategoryDao,
     private val ioDispatcher: CoroutineDispatcher
@@ -15,33 +28,51 @@ class CategoryRepository(
      */
     fun getAllCategoriesFlow(): Flow<List<CategoryEntity>> = categoryDao.getAllFlow()
 
-    /**
-     * Add a custom category
-     */
-    suspend fun addCustomCategory(
-        id: String,
-        name: String,
-        iconRes: String,
-        displayOrder: Int = 0,
-    ) = withContext(ioDispatcher) {
+    suspend fun createCustomCategory(name: String): CategoryMutationOutcome = withContext(ioDispatcher) {
+        val normalizedName = name.trim().replace(Regex("\\s+"), " ")
+        if (normalizedName.isEmpty()) {
+            return@withContext CategoryMutationOutcome(CategoryMutationResult.InvalidInput)
+        }
+
+        val duplicate = categoryDao.getByNameIgnoreCase(normalizedName)
+        if (duplicate != null) {
+            return@withContext CategoryMutationOutcome(CategoryMutationResult.Duplicate)
+        }
+
+        val allCategories = categoryDao.getAll()
+        val nextDisplayOrder = categoryDao.getMaxDisplayOrder() + 1
+        val existingIds = allCategories.map { it.id }.toSet()
+        val baseId = buildCustomCategoryId(normalizedName)
+        var generatedId = baseId
+        var suffix = 2
+        while (generatedId in existingIds) {
+            generatedId = "${baseId}_$suffix"
+            suffix++
+        }
+
         categoryDao.insert(
             CategoryEntity(
-                id = id,
-                name = name,
-                iconRes = iconRes,
+                id = generatedId,
+                name = normalizedName,
+                iconRes = "custom_category",
                 isEnabled = true,
-                displayOrder = displayOrder,
+                displayOrder = nextDisplayOrder,
                 isCustom = true,
                 wordCount = 0,
             )
         )
+        CategoryMutationOutcome(
+            result = CategoryMutationResult.Success,
+            categoryId = generatedId,
+        )
     }
 
-    /**
-     * Delete a custom category (only custom categories can be deleted)
-     */
-    suspend fun deleteCustomCategory(categoryId: String) = withContext(ioDispatcher) {
-        categoryDao.deleteCustomById(categoryId)
+    suspend fun deleteCustomCategory(categoryId: String): CategoryMutationResult = withContext(ioDispatcher) {
+        val existing = categoryDao.getById(categoryId) ?: return@withContext CategoryMutationResult.NotFound
+        if (!existing.isCustom) return@withContext CategoryMutationResult.InvalidInput
+
+        val deleted = categoryDao.deleteCustomById(categoryId)
+        if (deleted > 0) CategoryMutationResult.Success else CategoryMutationResult.NotFound
     }
 
     /**
@@ -49,5 +80,14 @@ class CategoryRepository(
      */
     suspend fun updateWordCount(categoryId: String, count: Int) = withContext(ioDispatcher){
         categoryDao.updateWordCount(categoryId, count)
+    }
+
+    private fun buildCustomCategoryId(name: String): String {
+        val slug = name
+            .lowercase()
+            .replace(Regex("[^a-z0-9]+"), "_")
+            .trim('_')
+            .ifEmpty { "custom" }
+        return "custom_$slug"
     }
 }

@@ -61,7 +61,6 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
                 .padding(horizontal = 24.dp)
                 .padding(top = 48.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -71,11 +70,11 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-            Text(
-                text = "SETTINGS",
-                color = ColorText,
-                style = MaterialTheme.typography.displayMedium
-            )
+                Text(
+                    text = "SETTINGS",
+                    color = ColorText,
+                    style = MaterialTheme.typography.displayMedium
+                )
                 Box(
                     modifier = Modifier
                         .size(44.dp)
@@ -86,129 +85,150 @@ fun SettingsScreen(
                     Text("✕", color = ColorMuted)
                 }
             }
+
             Spacer(Modifier.height(16.dp))
 
-            Text(
-                text = stringResource(Res.string.nav_customize_difficulty),
-                color = ColorMuted,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(8.dp))
-            val labels = listOf(
-                stringResource(Res.string.nav_customize_easy),
-                stringResource(Res.string.nav_customize_medium),
-                stringResource(Res.string.nav_customize_hard),
-            )
-            val colors = listOf(ColorWin, ColorWarn, ColorImp)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                labels.forEachIndexed { index, label ->
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState),
+            ) {
+                Text(
+                    text = stringResource(Res.string.nav_customize_difficulty),
+                    color = ColorMuted,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
+                val labels = listOf(
+                    stringResource(Res.string.nav_customize_easy),
+                    stringResource(Res.string.nav_customize_medium),
+                    stringResource(Res.string.nav_customize_hard),
+                )
+                val colors = listOf(ColorWin, ColorWarn, ColorImp)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    labels.forEachIndexed { index, label ->
+                        Box(
+                            Modifier
+                                .weight(1f)
+                                .height(36.dp)
+                                .border(
+                                    1.dp,
+                                    if (uiState.difficulty == index) colors[index].copy(alpha = 0.6f) else ColorBorder
+                                )
+                                .background(
+                                    if (uiState.difficulty == index) colors[index].copy(alpha = 0.12f) else Color.Transparent
+                                )
+                                .clickable {
+                                    viewModel.setDifficulty(index)
+                                    onConfigChange(config.copy(difficulty = index))
+                                },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = label,
+                                color = if (uiState.difficulty == index) colors[index] else ColorMuted,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(14.dp))
+
+                Text(
+                    text = stringResource(Res.string.nav_customize_imposter_hint),
+                    color = ColorMuted,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     Box(
-                        Modifier.weight(1f).height(36.dp).border(
-                            1.dp,
-                            if (uiState.difficulty == index) colors[index].copy(alpha = 0.6f) else ColorBorder
-                        ).background(
-                            if (uiState.difficulty == index) colors[index].copy(alpha = 0.12f) else Color.Transparent
-                        ).clickable {
-                            viewModel.setDifficulty(index)
-                            onConfigChange(config.copy(difficulty = index))
-                        },
+                        Modifier
+                            .weight(1f)
+                            .height(36.dp)
+                            .border(
+                                1.dp,
+                                if (!uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
+                            )
+                            .background(if (!uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                            .clickable {
+                                viewModel.setHintEnabled(false)
+                                onConfigChange(config.copy(imposterHintEnabled = false))
+                            },
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = label,
-                            color = if (uiState.difficulty == index) colors[index] else ColorMuted,
-                            style = MaterialTheme.typography.labelSmall
+                            text = stringResource(Res.string.nav_customize_hint_off),
+                            color = if (!uiState.imposterHintEnabled) ColorCrew else ColorMuted,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(36.dp)
+                            .border(
+                                1.dp,
+                                if (uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
+                            )
+                            .background(if (uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                            .clickable {
+                                viewModel.setHintEnabled(true)
+                                onConfigChange(config.copy(imposterHintEnabled = true))
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.nav_customize_hint_on),
+                            color = if (uiState.imposterHintEnabled) ColorCrew else ColorMuted,
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     }
                 }
-            }
-            Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(14.dp))
 
-            Text(
-                text = stringResource(Res.string.nav_customize_imposter_hint),
-                color = ColorMuted,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    Modifier.weight(1f).height(36.dp)
-                        .border(
-                            1.dp,
-                            if (!uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
-                        )
-                        .background(if (!uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                        .clickable {
-                            viewModel.setHintEnabled(false)
-                            onConfigChange(config.copy(imposterHintEnabled = false))
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = stringResource(Res.string.nav_customize_hint_off),
-                        color = if (!uiState.imposterHintEnabled) ColorCrew else ColorMuted,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-                Box(
-                    Modifier.weight(1f).height(36.dp)
-                        .border(
-                            1.dp,
-                            if (uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder
-                        )
-                        .background(if (uiState.imposterHintEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                        .clickable {
-                            viewModel.setHintEnabled(true)
-                            onConfigChange(config.copy(imposterHintEnabled = true))
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = stringResource(Res.string.nav_customize_hint_on),
-                        color = if (uiState.imposterHintEnabled) ColorCrew else ColorMuted,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-            }
-            Spacer(Modifier.height(14.dp))
-
-            Text(
-                text = "DISCUSSION TIMER",
-                color = ColorMuted,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    Modifier.weight(1f).height(36.dp)
-                        .border(1.dp, if (!uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
-                        .background(if (!uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                        .clickable {
-                            viewModel.setTimerEnabled(false)
-                            onConfigChange(config.copy(isTimerEnabled = false))
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("OFF", color = if (!uiState.isTimerEnabled) ColorCrew else ColorMuted)
-                }
-                Box(
-                    Modifier.weight(1f).height(36.dp)
-                        .border(1.dp, if (uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
-                        .background(if (uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
-                        .clickable {
-                            viewModel.setTimerEnabled(true)
-                            onConfigChange(config.copy(isTimerEnabled = true))
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("ON", color = if (uiState.isTimerEnabled) ColorCrew else ColorMuted)
+                Text(
+                    text = "DISCUSSION TIMER",
+                    color = ColorMuted,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(36.dp)
+                            .border(1.dp, if (!uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                            .background(if (!uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                            .clickable {
+                                viewModel.setTimerEnabled(false)
+                                onConfigChange(config.copy(isTimerEnabled = false))
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text("OFF", color = if (!uiState.isTimerEnabled) ColorCrew else ColorMuted)
+                    }
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(36.dp)
+                            .border(1.dp, if (uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.6f) else ColorBorder)
+                            .background(if (uiState.isTimerEnabled) ColorCrew.copy(alpha = 0.12f) else Color.Transparent)
+                            .clickable {
+                                viewModel.setTimerEnabled(true)
+                                onConfigChange(config.copy(isTimerEnabled = true))
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text("ON", color = if (uiState.isTimerEnabled) ColorCrew else ColorMuted)
+                    }
                 }
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
             PrimaryButton(text = "DONE", onClick = onClose)
         }
     }

@@ -45,7 +45,6 @@ import com.imposter.play.theme.ColorText
 import com.imposter.play.ui.components.GridBackground
 import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
-import imposter.sharedui.generated.resources.nav_customize_category
 import imposter.sharedui.generated.resources.nav_customize_play
 import imposter.sharedui.generated.resources.nav_customize_random
 import imposter.sharedui.generated.resources.nav_customize_tab_category
@@ -324,15 +323,6 @@ private fun CategoryTabContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.verticalScroll(rememberScrollState())) {
-
-        Text(
-            text = stringResource(Res.string.nav_customize_category),
-            color = ColorMuted,
-            style = MaterialTheme.typography.labelSmall
-        )
-
-        Spacer(Modifier.height(8.dp))
-
         val isAll = CATEGORY_ALL in selectedCategoryIds
 
         Box(

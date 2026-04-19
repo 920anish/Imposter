@@ -7,6 +7,7 @@ import com.imposter.play.data.repository.PlayerRepository
 import com.imposter.play.data.local.WordCatalogUpdater
 import com.imposter.play.data.repository.WordRepository
 import com.imposter.play.engine.GameViewModel
+import com.imposter.play.ui.screens.AddWordsViewModel
 import com.imposter.play.ui.screens.CustomizeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -25,7 +26,7 @@ val appModule = module {
     single { get<AppDatabase>().playedHistoryDao() }
 
     // Repositories
-    single { WordRepository(get(), get() , get()) }
+    single { WordRepository(get(), get(), get(), get()) }
     single { CategoryRepository(get(), get()) }
     single { PlayerRepository(get(), get()) }
     single { WordCatalogUpdater(get(), get(), get(), get()) }
@@ -33,6 +34,7 @@ val appModule = module {
     // ViewModels
     factory { GameViewModel(get(), get(), get(), get()) }
     factory { CustomizeViewModel(get(), get(), get()) }
+    factory { AddWordsViewModel(get(), get()) }
 
 
 

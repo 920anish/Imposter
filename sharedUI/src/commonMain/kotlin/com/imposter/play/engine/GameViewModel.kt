@@ -2,6 +2,7 @@ package com.imposter.play.engine
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.imposter.play.data.local.CATEGORY_ALL
 import com.imposter.play.data.local.AppPreferences
 import com.imposter.play.data.repository.PlayerRepository
 import com.imposter.play.data.local.WordCatalogUpdater
@@ -139,10 +140,22 @@ class GameViewModel(
         val playerCount = playerNames.size.coerceIn(3, 10)
         if (playerCount < 3) return false
 
-        val selectedWord = wordRepository.getRandomWord(
-            selectedCategoryIds = settings.selectedCategoryIds,
+        var selectedCategoryIds = settings.selectedCategoryIds.ifEmpty { setOf(CATEGORY_ALL) }
+        var selectedWord = wordRepository.getRandomWord(
+            selectedCategoryIds = selectedCategoryIds,
             difficulty = normalizedConfig.difficulty,
-        ) ?: return false
+        )
+
+        if (selectedWord == null && CATEGORY_ALL !in selectedCategoryIds) {
+            selectedCategoryIds = setOf(CATEGORY_ALL)
+            appPreferences.setSelectedCategories(selectedCategoryIds)
+            selectedWord = wordRepository.getRandomWord(
+                selectedCategoryIds = selectedCategoryIds,
+                difficulty = normalizedConfig.difficulty,
+            )
+        }
+
+        val finalWord = selectedWord ?: return false
 
         val imposterIndex = Random.nextInt(until = playerCount)
         discussionTimerJob?.cancel()
@@ -151,7 +164,7 @@ class GameViewModel(
             config = normalizedConfig.copy(playerCount = playerCount, isTimerEnabled = settings.isTimerEnabled),
             state = GameState.RoleReveal(playerIndex = 0, isRevealed = false),
             imposterIndex = imposterIndex,
-            currentWord = selectedWord,
+            currentWord = finalWord,
             votes = (0 until playerCount).map { VoteCount(it, 0) },
             revealedPlayers = emptySet(),
             playerNames = playerNames,

@@ -27,6 +27,12 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE id = :id")
     suspend fun getById(id: String): CategoryEntity?
 
+    @Query("SELECT * FROM categories WHERE LOWER(name) = LOWER(:name) LIMIT 1")
+    suspend fun getByNameIgnoreCase(name: String): CategoryEntity?
+
+    @Query("SELECT COALESCE(MAX(displayOrder), -1) FROM categories")
+    suspend fun getMaxDisplayOrder(): Int
+
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(category: CategoryEntity)
 
@@ -40,7 +46,7 @@ interface CategoryDao {
     suspend fun delete(category: CategoryEntity)
 
     @Query("DELETE FROM categories WHERE id = :id AND isCustom = 1")
-    suspend fun deleteCustomById(id: String)
+    suspend fun deleteCustomById(id: String): Int
 
     @Query("UPDATE categories SET wordCount = :count WHERE id = :categoryId")
     suspend fun updateWordCount(categoryId: String, count: Int)

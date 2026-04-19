@@ -34,9 +34,11 @@ import com.imposter.play.ui.components.PickerStepButton
 import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_home_badge
+import imposter.sharedui.generated.resources.nav_home_add_words
 import imposter.sharedui.generated.resources.nav_home_customize
 import imposter.sharedui.generated.resources.nav_home_play_now
 import imposter.sharedui.generated.resources.nav_home_players
+import imposter.sharedui.generated.resources.nav_home_settings
 import imposter.sharedui.generated.resources.nav_home_subtitle
 import imposter.sharedui.generated.resources.nav_home_title
 import org.jetbrains.compose.resources.stringResource
@@ -48,6 +50,7 @@ fun HomeScreen(
     onIncreasePlayers: () -> Unit,
     onPlayNow: (GameConfig) -> Unit,
     onCustomize: () -> Unit = {},
+    onAddWords: () -> Unit = {},
     onSettings: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -135,7 +138,13 @@ fun HomeScreen(
             )
             Spacer(Modifier.height(10.dp))
             GhostButton(
-                text = "SETTINGS",
+                text = stringResource(Res.string.nav_home_add_words),
+                onClick = onAddWords,
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+            )
+            Spacer(Modifier.height(10.dp))
+            GhostButton(
+                text = stringResource(Res.string.nav_home_settings),
                 onClick = onSettings,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
             )

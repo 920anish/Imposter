@@ -13,6 +13,9 @@ data object CustomizeRoute : NavKey
 data object SettingsRoute : NavKey
 
 @Serializable
+data object AddWordsRoute : NavKey
+
+@Serializable
 data class RoleRevealRoute(val playerIndex: Int) : NavKey
 
 @Serializable

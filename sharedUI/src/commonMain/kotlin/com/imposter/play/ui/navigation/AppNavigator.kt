@@ -13,6 +13,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.imposter.play.engine.GameIntent
 import com.imposter.play.engine.GameState
 import com.imposter.play.engine.GameViewModel
+import com.imposter.play.ui.screens.AddWordsScreen
 import com.imposter.play.ui.screens.CustomizeScreen
 import com.imposter.play.ui.screens.DiscussionScreen
 import com.imposter.play.ui.screens.HomeScreen
@@ -45,7 +46,7 @@ fun AppNavigator(
                     while (backStack.size > 1) backStack.removeLastOrNull()
                 }
                 is HomeRoute -> return@NavDisplay
-                is CustomizeRoute, is SettingsRoute -> backStack.removeLastOrNull()
+                is CustomizeRoute, is SettingsRoute, is AddWordsRoute -> backStack.removeLastOrNull()
                 else -> {
                     // discussion, vote, result — back goes home
                     viewModel.onIntent(GameIntent.PlayAgain)
@@ -67,7 +68,13 @@ fun AppNavigator(
                         }
                     },
                     onCustomize = { backStack.add(CustomizeRoute) },
+                    onAddWords = { backStack.add(AddWordsRoute) },
                     onSettings = { backStack.add(SettingsRoute) },
+                )
+            }
+            entry<AddWordsRoute> {
+                AddWordsScreen(
+                    onClose = { backStack.removeLastOrNull() },
                 )
             }
             entry<CustomizeRoute> {
