@@ -119,7 +119,7 @@
         </vector>
     </aapt:attr>
 
-    <!-- mask group: sleek, fully synchronous Material Design expansion -->
+    <!-- mask group -->
     <target android:name="maskGroup">
         <aapt:attr name="android:animation">
             <set android:ordering="together">
@@ -151,7 +151,7 @@
         </aapt:attr>
     </target>
 
-    <!-- left eye: seamless symmetrical slit morph (Google style) -->
+    <!-- left eye -->
     <target android:name="leftEye">
         <aapt:attr name="android:animation">
             <set android:ordering="together">
@@ -178,7 +178,7 @@
         </aapt:attr>
     </target>
 
-    <!-- right eye: perfectly synced with the left (no messy delays) -->
+    <!-- right eye -->
     <target android:name="rightEye">
         <aapt:attr name="android:animation">
             <set android:ordering="together">
