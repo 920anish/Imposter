@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.imposter.play.engine.GameSession
 import com.imposter.play.engine.GameState
@@ -41,18 +40,17 @@ import com.imposter.play.ui.components.MonoBadge
 import com.imposter.play.ui.components.PrimaryButton
 import com.imposter.play.ui.components.RoleRevealCard
 import imposter.sharedui.generated.resources.Res
+import imposter.sharedui.generated.resources.nav_customize_player_name
 import imposter.sharedui.generated.resources.nav_role_classified
 import imposter.sharedui.generated.resources.nav_role_crew_member
 import imposter.sharedui.generated.resources.nav_role_crew_tip
 import imposter.sharedui.generated.resources.nav_role_done
 import imposter.sharedui.generated.resources.nav_role_dont_peek
 import imposter.sharedui.generated.resources.nav_role_hint_title
-import imposter.sharedui.generated.resources.nav_role_imp_tip_1
-import imposter.sharedui.generated.resources.nav_role_imp_tip_2
-import imposter.sharedui.generated.resources.nav_role_imp_tip_no_hint
 import imposter.sharedui.generated.resources.nav_role_imposter_member
 import imposter.sharedui.generated.resources.nav_role_no_hint_title
 import imposter.sharedui.generated.resources.nav_role_no_hint_value
+import imposter.sharedui.generated.resources.nav_role_pass
 import imposter.sharedui.generated.resources.nav_role_pass_phone
 import imposter.sharedui.generated.resources.nav_role_reveal
 import imposter.sharedui.generated.resources.nav_role_secret_word
@@ -70,7 +68,8 @@ fun RoleRevealScreen(
     val revealState = session.state as? GameState.RoleReveal ?: return
     val isCardRevealed = revealState.isRevealed
     val playerName =
-        session.normalizedPlayerNames.getOrNull(revealState.playerIndex) ?: "Player 1"
+        session.normalizedPlayerNames.getOrNull(revealState.playerIndex)
+            ?: stringResource(Res.string.nav_customize_player_name, "1")
     val scrollState = rememberScrollState()
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -129,7 +128,7 @@ private fun RoleRevealCover(
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = "PASS",
+            text = stringResource(Res.string.nav_role_pass),
             style = MaterialTheme.typography.displayLarge,
             color = ColorText,
         )

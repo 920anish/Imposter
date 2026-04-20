@@ -13,9 +13,9 @@ import androidx.navigation3.ui.NavDisplay
 import com.imposter.play.engine.GameIntent
 import com.imposter.play.engine.GameState
 import com.imposter.play.engine.GameViewModel
-import com.imposter.play.ui.screens.AddWordsScreen
-import com.imposter.play.ui.screens.CustomizeScreen
-import com.imposter.play.ui.screens.CustomizeViewModel
+import com.imposter.play.ui.screens.addwords.AddWordsScreen
+import com.imposter.play.ui.screens.customize.CustomizeScreen
+import com.imposter.play.ui.screens.customize.CustomizeViewModel
 import com.imposter.play.ui.screens.DiscussionScreen
 import com.imposter.play.ui.screens.HomeScreen
 import com.imposter.play.ui.screens.ResultScreen

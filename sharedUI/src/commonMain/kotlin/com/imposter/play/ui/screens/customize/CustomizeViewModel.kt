@@ -1,4 +1,4 @@
-package com.imposter.play.ui.screens
+package com.imposter.play.ui.screens.customize
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

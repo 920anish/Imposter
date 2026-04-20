@@ -47,6 +47,7 @@ import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_discussion_pause
 import imposter.sharedui.generated.resources.nav_discussion_players
 import imposter.sharedui.generated.resources.nav_discussion_resume
+import imposter.sharedui.generated.resources.nav_discussion_no_timer
 import imposter.sharedui.generated.resources.nav_discussion_skip_result
 import imposter.sharedui.generated.resources.nav_discussion_subtitle
 import imposter.sharedui.generated.resources.nav_discussion_title
@@ -124,7 +125,7 @@ fun DiscussionScreen(
                 )
             } else {
                 Text(
-                    text = "DISCUSS NOW",
+                    text = stringResource(Res.string.nav_discussion_no_timer),
                     style = MaterialTheme.typography.displayLarge,
                     color = ColorText,
                     textAlign = TextAlign.Center,

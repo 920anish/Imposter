@@ -1,4 +1,4 @@
-package com.imposter.play.ui.screens
+package com.imposter.play.ui.screens.customize
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import com.imposter.play.data.entities.CategoryEntity
 import com.imposter.play.data.entities.PlayerEntity
@@ -42,19 +44,28 @@ import com.imposter.play.theme.ColorCrew
 import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.ColorText
+import com.imposter.play.ui.components.CloseableScreenHeader
 import com.imposter.play.ui.components.GridBackground
+import com.imposter.play.ui.components.OutlinedTabButton
 import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
+import imposter.sharedui.generated.resources.common_add
+import imposter.sharedui.generated.resources.common_off
+import imposter.sharedui.generated.resources.common_on
 import imposter.sharedui.generated.resources.nav_customize_play
+import imposter.sharedui.generated.resources.nav_customize_player_name
 import imposter.sharedui.generated.resources.nav_customize_random
 import imposter.sharedui.generated.resources.nav_customize_randomize_players
 import imposter.sharedui.generated.resources.nav_customize_tab_category
 import imposter.sharedui.generated.resources.nav_customize_tab_players
 import imposter.sharedui.generated.resources.nav_customize_title
+import imposter.sharedui.generated.resources.nav_words_count
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+
+private enum class CustomizeTab { Players, Category }
 
 @Composable
 fun CustomizeScreen(
@@ -65,7 +76,7 @@ fun CustomizeScreen(
     viewModel: CustomizeViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var tab by remember { mutableStateOf("players") }
+    var tab by remember { mutableStateOf(CustomizeTab.Players) }
 
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground(tint = ColorBorder, opacity = 0.32f)
@@ -77,50 +88,34 @@ fun CustomizeScreen(
                 .padding(top = 48.dp, bottom = 24.dp),
         ) {
 
-            // HEADER
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(Res.string.nav_customize_title),
-                    color = ColorText,
-                    style = MaterialTheme.typography.displayMedium
-                )
-
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .border(1.dp, ColorBorder)
-                        .clickable(onClick = onClose),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("✕", color = ColorMuted)
-                }
-            }
+            CloseableScreenHeader(
+                title = stringResource(Res.string.nav_customize_title),
+                onClose = onClose,
+            )
 
             Spacer(Modifier.height(18.dp))
 
             // TABS
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TabButton(
+                OutlinedTabButton(
                     text = stringResource(Res.string.nav_customize_tab_players),
-                    active = tab == "players",
-                    modifier = Modifier.weight(1f)
-                ) { tab = "players" }
+                    selected = tab == CustomizeTab.Players,
+                    onClick = { tab = CustomizeTab.Players },
+                    modifier = Modifier.weight(1f),
+                )
 
-                TabButton(
+                OutlinedTabButton(
                     text = stringResource(Res.string.nav_customize_tab_category),
-                    active = tab == "category",
-                    modifier = Modifier.weight(1f)
-                ) { tab = "category" }
+                    selected = tab == CustomizeTab.Category,
+                    onClick = { tab = CustomizeTab.Category },
+                    modifier = Modifier.weight(1f),
+                )
             }
 
             Spacer(Modifier.height(16.dp))
 
             // CONTENT
-            if (tab == "players") {
+            if (tab == CustomizeTab.Players) {
                 PlayersTabContent(
                     players = uiState.players,
                     onTogglePlayer = viewModel::setPlayerActive,
@@ -199,9 +194,9 @@ private fun PlayersTabContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                if (isDragging) ColorSurface.copy(alpha = 0.98f) else androidx.compose.ui.graphics.Color.Transparent
+                                if (isDragging) ColorSurface.copy(alpha = 0.98f) else Color.Transparent
                             )
-                            .border(1.dp, if (isDragging) ColorBorder2 else androidx.compose.ui.graphics.Color.Transparent)
+                            .border(1.dp, if (isDragging) ColorBorder2 else Color.Transparent)
                             .alpha(if (isDragging) 0.92f else 1f),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -244,7 +239,7 @@ private fun PlayersTabContent(
                                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                                     color = if (player.isActive) ColorText else ColorMuted
                                 ),
-                                cursorBrush = androidx.compose.ui.graphics.SolidColor(ColorCrew),
+                                cursorBrush = SolidColor(ColorCrew),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .onFocusChanged { focusState ->
@@ -272,7 +267,9 @@ private fun PlayersTabContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = if (player.isActive) "ON" else "OFF",
+                                text = if (player.isActive) stringResource(Res.string.common_on) else stringResource(
+                                    Res.string.common_off
+                                ),
                                 color = when {
                                     !canToggle -> ColorMuted.copy(alpha = 0.45f)
                                     player.isActive -> ColorCrew
@@ -300,6 +297,10 @@ private fun PlayersTabContent(
 
             item {
                 Spacer(Modifier.height(14.dp))
+                val addPlayerName = stringResource(
+                    Res.string.nav_customize_player_name,
+                    (orderedPlayers.size + 1).toString(),
+                )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     Box(
@@ -321,12 +322,10 @@ private fun PlayersTabContent(
                             .weight(1f)
                             .height(44.dp)
                             .border(1.dp, ColorBorder)
-                            .clickable {
-                                onAddPlayer("Player ${orderedPlayers.size + 1}")
-                            },
+                            .clickable { onAddPlayer(addPlayerName) },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("ADD", color = ColorMuted)
+                        Text(stringResource(Res.string.common_add), color = ColorMuted)
                     }
                 }
             }
@@ -387,7 +386,7 @@ private fun CategoryTabContent(
                                 style = MaterialTheme.typography.labelMedium,
                             )
                             Text(
-                                text = "${category.wordCount} words",
+                                text = stringResource(Res.string.nav_words_count, category.wordCount.toString()),
                                 color = ColorMuted,
                                 style = MaterialTheme.typography.labelSmall,
                             )
@@ -397,23 +396,5 @@ private fun CategoryTabContent(
             }
             Spacer(Modifier.height(8.dp))
         }
-    }
-}
-
-@Composable
-private fun TabButton(
-    text: String,
-    active: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier
-            .height(38.dp)
-            .border(1.dp, if (active) ColorCrew else ColorBorder)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text, color = if (active) ColorCrew else ColorMuted)
     }
 }

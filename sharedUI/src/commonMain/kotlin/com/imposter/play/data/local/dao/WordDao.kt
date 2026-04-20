@@ -152,10 +152,10 @@ interface WordDao {
     @Query("SELECT COUNT(*) FROM words WHERE categoryId = :categoryId")
     suspend fun getCountByCategory(categoryId: String): Int
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(word: WordEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(words: List<WordEntity>)
 
     @Delete

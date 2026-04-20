@@ -1,4 +1,4 @@
-package com.imposter.play.ui.screens
+package com.imposter.play.ui.screens.addwords
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -102,15 +102,6 @@ class AddWordsViewModel(
         )
     }
 
-    fun cancelEditing() {
-        _uiState.value = _uiState.value.copy(
-            editingWordId = null,
-            wordText = "",
-            hintText = "",
-            difficultyLevel = 1,
-        )
-    }
-
     fun addCustomCategory() {
         val state = _uiState.value
         viewModelScope.launch {
@@ -151,10 +142,7 @@ class AddWordsViewModel(
 
     fun saveWord() {
         val state = _uiState.value
-        val selectedCategoryId = state.selectedCategoryId
-        if (selectedCategoryId == null) {
-            return
-        }
+        val selectedCategoryId = state.selectedCategoryId ?: return
 
         viewModelScope.launch {
             val result = if (state.editingWordId == null) {

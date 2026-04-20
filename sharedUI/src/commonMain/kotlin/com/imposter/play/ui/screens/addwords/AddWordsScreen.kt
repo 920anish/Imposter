@@ -1,4 +1,4 @@
-package com.imposter.play.ui.screens
+package com.imposter.play.ui.screens.addwords
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -41,7 +40,9 @@ import com.imposter.play.theme.ColorMuted
 import com.imposter.play.theme.ColorSurface
 import com.imposter.play.theme.ColorText
 import com.imposter.play.theme.ColorWin
+import com.imposter.play.ui.components.CloseableScreenHeader
 import com.imposter.play.ui.components.GridBackground
+import com.imposter.play.ui.components.OutlinedTabButton
 import com.imposter.play.ui.components.PrimaryButton
 import imposter.sharedui.generated.resources.Res
 import imposter.sharedui.generated.resources.nav_add_words_add
@@ -58,9 +59,11 @@ import imposter.sharedui.generated.resources.nav_add_words_empty
 import imposter.sharedui.generated.resources.nav_add_words_empty_custom_categories
 import imposter.sharedui.generated.resources.nav_add_words_hint
 import imposter.sharedui.generated.resources.nav_add_words_hint_placeholder
+import imposter.sharedui.generated.resources.nav_add_words_history_category_item
 import imposter.sharedui.generated.resources.nav_add_words_history_tab
 import imposter.sharedui.generated.resources.nav_add_words_save
 import imposter.sharedui.generated.resources.nav_add_words_title
+import imposter.sharedui.generated.resources.nav_add_words_unknown_difficulty
 import imposter.sharedui.generated.resources.nav_add_words_word
 import imposter.sharedui.generated.resources.nav_add_words_word_placeholder
 import imposter.sharedui.generated.resources.nav_add_words_words_tab
@@ -98,44 +101,31 @@ fun AddWordsScreen(
                 .padding(horizontal = 24.dp)
                 .padding(top = 48.dp, bottom = 24.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(Res.string.nav_add_words_title),
-                    color = ColorText,
-                    style = MaterialTheme.typography.displayMedium,
-                )
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .border(1.dp, ColorBorder)
-                        .clickable(onClick = onClose),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("✕", color = ColorMuted)
-                }
-            }
+            CloseableScreenHeader(
+                title = stringResource(Res.string.nav_add_words_title),
+                onClose = onClose,
+            )
 
             Spacer(Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                AddWordsTabButton(
+                OutlinedTabButton(
                     text = stringResource(Res.string.nav_add_words_words_tab),
                     selected = tab == AddWordsTab.Words,
+                    onClick = { tab = AddWordsTab.Words },
                     modifier = Modifier.weight(1f),
-                ) { tab = AddWordsTab.Words }
-                AddWordsTabButton(
+                )
+                OutlinedTabButton(
                     text = stringResource(Res.string.nav_add_words_categories_tab),
                     selected = tab == AddWordsTab.Categories,
+                    onClick = { tab = AddWordsTab.Categories },
                     modifier = Modifier.weight(1f),
-                ) { tab = AddWordsTab.Categories }
-                AddWordsTabButton(
+                )
+                OutlinedTabButton(
                     text = stringResource(Res.string.nav_add_words_history_tab),
                     selected = tab == AddWordsTab.History,
+                    onClick = { tab = AddWordsTab.History },
                     modifier = Modifier.weight(1f),
-                ) { tab = AddWordsTab.History }
+                )
             }
 
             Spacer(Modifier.height(14.dp))
@@ -381,7 +371,9 @@ private fun HistoryTabContent(
         customWords.forEach { word ->
             CustomWordRow(
                 word = word,
-                difficultyLabel = difficultyLabels.getOrElse(word.difficultyLevel) { "-" },
+                difficultyLabel = difficultyLabels.getOrElse(word.difficultyLevel) {
+                    stringResource(Res.string.nav_add_words_unknown_difficulty)
+                },
                 onEdit = { onEditWord(word.id) },
                 onDelete = { onDeleteWord(word.id) },
             )
@@ -401,7 +393,11 @@ private fun HistoryTabContent(
     } else {
         customCategories.forEach { category ->
             Text(
-                text = "• ${category.name} (${category.wordCount})",
+                text = stringResource(
+                    Res.string.nav_add_words_history_category_item,
+                    category.name,
+                    category.wordCount.toString(),
+                ),
                 color = ColorText,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -534,29 +530,6 @@ private fun MiniActionButton(
         Text(
             text = label,
             color = ColorMuted,
-            style = MaterialTheme.typography.labelSmall,
-        )
-    }
-}
-
-@Composable
-private fun AddWordsTabButton(
-    text: String,
-    selected: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .height(38.dp)
-            .border(1.dp, if (selected) ColorCrew else ColorBorder)
-            .background(if (selected) ColorCrew.copy(alpha = 0.12f) else ColorSurface)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            color = if (selected) ColorCrew else ColorMuted,
             style = MaterialTheme.typography.labelSmall,
         )
     }

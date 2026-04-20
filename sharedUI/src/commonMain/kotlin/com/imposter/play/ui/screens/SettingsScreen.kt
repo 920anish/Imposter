@@ -33,7 +33,11 @@ import com.imposter.play.theme.ColorWarn
 import com.imposter.play.theme.ColorWin
 import com.imposter.play.ui.components.GridBackground
 import com.imposter.play.ui.components.PrimaryButton
+import com.imposter.play.ui.screens.customize.CustomizeViewModel
 import imposter.sharedui.generated.resources.Res
+import imposter.sharedui.generated.resources.common_done
+import imposter.sharedui.generated.resources.common_off
+import imposter.sharedui.generated.resources.common_on
 import imposter.sharedui.generated.resources.nav_customize_difficulty
 import imposter.sharedui.generated.resources.nav_customize_easy
 import imposter.sharedui.generated.resources.nav_customize_hard
@@ -41,6 +45,8 @@ import imposter.sharedui.generated.resources.nav_customize_hint_off
 import imposter.sharedui.generated.resources.nav_customize_hint_on
 import imposter.sharedui.generated.resources.nav_customize_imposter_hint
 import imposter.sharedui.generated.resources.nav_customize_medium
+import imposter.sharedui.generated.resources.nav_settings_discussion_timer
+import imposter.sharedui.generated.resources.nav_settings_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -65,7 +71,7 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "SETTINGS",
+                text = stringResource(Res.string.nav_settings_title),
                 color = ColorText,
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier.fillMaxWidth(),
@@ -175,7 +181,7 @@ fun SettingsScreen(
                 Spacer(Modifier.height(14.dp))
 
                 Text(
-                    text = "DISCUSSION TIMER",
+                    text = stringResource(Res.string.nav_settings_discussion_timer),
                     color = ColorMuted,
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.fillMaxWidth(),
@@ -194,7 +200,10 @@ fun SettingsScreen(
                             },
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("OFF", color = if (!uiState.isTimerEnabled) ColorCrew else ColorMuted)
+                        Text(
+                            text = stringResource(Res.string.common_off),
+                            color = if (!uiState.isTimerEnabled) ColorCrew else ColorMuted,
+                        )
                     }
                     Box(
                         Modifier
@@ -208,13 +217,16 @@ fun SettingsScreen(
                             },
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("ON", color = if (uiState.isTimerEnabled) ColorCrew else ColorMuted)
+                        Text(
+                            text = stringResource(Res.string.common_on),
+                            color = if (uiState.isTimerEnabled) ColorCrew else ColorMuted,
+                        )
                     }
                 }
             }
 
             Spacer(Modifier.height(16.dp))
-            PrimaryButton(text = "DONE", onClick = onClose)
+            PrimaryButton(text = stringResource(Res.string.common_done), onClick = onClose)
         }
     }
 }

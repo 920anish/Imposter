@@ -13,7 +13,7 @@ interface PlayedHistoryDao {
      * Mark a word as played with current timestamp.
      * Uses REPLACE to update timestamp if word was already in history.
      */
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun markPlayed(entry: PlayedHistoryEntity)
 
     /**

@@ -45,6 +45,8 @@ import imposter.sharedui.generated.resources.nav_result_imposter_was
 import imposter.sharedui.generated.resources.nav_result_imposter_wins
 import imposter.sharedui.generated.resources.nav_result_play_again
 import imposter.sharedui.generated.resources.nav_result_their_hint
+import imposter.sharedui.generated.resources.nav_result_unknown_hint
+import imposter.sharedui.generated.resources.nav_customize_player_name
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -63,9 +65,16 @@ fun ResultScreen(
     val accent = if (crewWon) ColorWin else ColorImp
     val accentDim = if (crewWon) ColorWinDim else ColorImpDim
     val imposterName = session.normalizedPlayerNames.getOrNull(session.imposterIndex)
-        ?: "Player ${session.imposterIndex + 1}"
+        ?: stringResource(
+            Res.string.nav_customize_player_name,
+            (session.imposterIndex + 1).toString(),
+        )
     val hintEnabled = session.config.imposterHintEnabled
-    val hint = if (hintEnabled) session.currentWord.hint.ifBlank { "???" } else null
+    val hint = if (hintEnabled) {
+        session.currentWord.hint.ifBlank { stringResource(Res.string.nav_result_unknown_hint) }
+    } else {
+        null
+    }
 
     val scrollState = rememberScrollState()
 

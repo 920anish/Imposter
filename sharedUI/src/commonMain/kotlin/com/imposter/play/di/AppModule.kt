@@ -7,8 +7,8 @@ import com.imposter.play.data.repository.PlayerRepository
 import com.imposter.play.data.local.WordCatalogUpdater
 import com.imposter.play.data.repository.WordRepository
 import com.imposter.play.engine.GameViewModel
-import com.imposter.play.ui.screens.AddWordsViewModel
-import com.imposter.play.ui.screens.CustomizeViewModel
+import com.imposter.play.ui.screens.addwords.AddWordsViewModel
+import com.imposter.play.ui.screens.customize.CustomizeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.dsl.module

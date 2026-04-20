@@ -30,10 +30,10 @@ interface CategoryDao {
     @Query("SELECT COALESCE(MAX(displayOrder), -1) FROM categories")
     suspend fun getMaxDisplayOrder(): Int
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: CategoryEntity)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(categories: List<CategoryEntity>)
 
     @Update

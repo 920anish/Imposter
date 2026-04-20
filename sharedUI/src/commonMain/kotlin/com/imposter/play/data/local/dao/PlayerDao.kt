@@ -33,10 +33,10 @@ interface PlayerDao {
     @Query("SELECT * FROM players WHERE name = :name AND id != :excludeId LIMIT 1")
     suspend fun getByNameExcludingId(name: String, excludeId: Long): PlayerEntity?
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(player: PlayerEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(players: List<PlayerEntity>)
 
     @Update
