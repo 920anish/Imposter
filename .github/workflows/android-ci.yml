@@ -34,7 +34,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@v4
 
       - name: Build shared + Android debug
-        run: ./gradlew --no-daemon :sharedUI:compileKotlinMetadata :sharedUI:compileDebugKotlinAndroid :androidApp:assembleDebug
+        run: ./gradlew --no-daemon :sharedUI:compileKotlinMetadata :sharedUI:compileAndroidMain :androidApp:assembleDebug
 
       - name: Upload debug APK
         if: always()
