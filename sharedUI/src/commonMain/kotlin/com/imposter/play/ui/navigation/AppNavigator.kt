@@ -1,13 +1,5 @@
 package com.imposter.play.ui.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -17,13 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.scene.Scene
 import androidx.navigation3.ui.NavDisplay
 import com.imposter.play.engine.GameIntent
 import com.imposter.play.engine.GameState
 import com.imposter.play.engine.GameViewModel
 import com.imposter.play.ui.screens.AddWordsScreen
 import com.imposter.play.ui.screens.CustomizeScreen
+import com.imposter.play.ui.screens.CustomizeViewModel
 import com.imposter.play.ui.screens.DiscussionScreen
 import com.imposter.play.ui.screens.HomeScreen
 import com.imposter.play.ui.screens.ResultScreen
@@ -38,6 +30,7 @@ fun AppNavigator(
     viewModel: GameViewModel = koinInject(),
 ) {
     val session by viewModel.session.collectAsState()
+    val customizeViewModel = koinInject<CustomizeViewModel>()
     val backStack = remember { mutableStateListOf<NavKey>(HomeRoute) }
     val scope = rememberCoroutineScope()
 
@@ -49,14 +42,14 @@ fun AppNavigator(
         backStack = backStack,
         transitionSpec = {
             if (isGameplayToGameplay()) {
-                gameplayTransform()
+                gameplayForwardTransform()
             } else {
                 setupForwardTransform()
             }
         },
         popTransitionSpec = {
             if (isGameplayToGameplay()) {
-                gameplayTransform()
+                gameplayBackTransform()
             } else {
                 setupBackTransform()
             }
@@ -103,6 +96,7 @@ fun AppNavigator(
             entry<CustomizeRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
                 CustomizeScreen(
                     config = session.config,
+                    viewModel = customizeViewModel,
                     onPlay = {
                         scope.launch {
                             if (viewModel.startGameAndAwait(it)) {
@@ -116,6 +110,7 @@ fun AppNavigator(
             entry<SettingsRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
                 SettingsScreen(
                     config = session.config,
+                    viewModel = customizeViewModel,
                     onConfigChange = { updated ->
                         viewModel.onIntent(GameIntent.UpdateSetupConfig(updated))
                     },
@@ -186,45 +181,4 @@ fun AppNavigator(
             }
         },
     )
-
-//    LaunchedEffect(session.state) {
-//        if (session.state is GameState.Idle && backStack.lastOrNull() != HomeRoute) {
-//            while (backStack.size > 1) {
-//                backStack.removeLastOrNull()
-//            }
-//        }
-//    }
-}
-
-private const val NAV_GROUP_KEY = "nav_group"
-private const val NAV_GROUP_HOME = "home"
-private const val NAV_GROUP_SETUP = "setup"
-private const val NAV_GROUP_GAMEPLAY = "gameplay"
-
-private fun navGroupMetadata(group: String): Map<String, Any> = mapOf(NAV_GROUP_KEY to group)
-
-private fun Scene<NavKey>.navGroupOrDefault(): String =
-    metadata[NAV_GROUP_KEY] as? String ?: NAV_GROUP_SETUP
-
-private fun AnimatedContentTransitionScope<Scene<NavKey>>.isGameplayToGameplay(): Boolean {
-    return initialState.navGroupOrDefault() == NAV_GROUP_GAMEPLAY &&
-        targetState.navGroupOrDefault() == NAV_GROUP_GAMEPLAY
-}
-
-private fun AnimatedContentTransitionScope<Scene<NavKey>>.setupForwardTransform(): ContentTransform {
-    return (slideInHorizontally(animationSpec = tween(210)) { width -> width / 7 } +
-        fadeIn(animationSpec = tween(210))) togetherWith
-        (slideOutHorizontally(animationSpec = tween(190)) { width -> -width / 10 } +
-            fadeOut(animationSpec = tween(170)))
-}
-
-private fun AnimatedContentTransitionScope<Scene<NavKey>>.setupBackTransform(): ContentTransform {
-    return (slideInHorizontally(animationSpec = tween(210)) { width -> -width / 7 } +
-        fadeIn(animationSpec = tween(210))) togetherWith
-        (slideOutHorizontally(animationSpec = tween(190)) { width -> width / 10 } +
-            fadeOut(animationSpec = tween(170)))
-}
-
-private fun AnimatedContentTransitionScope<Scene<NavKey>>.gameplayTransform(): ContentTransform {
-    return fadeIn(animationSpec = tween(105)) togetherWith fadeOut(animationSpec = tween(95))
 }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -65,26 +64,12 @@ fun SettingsScreen(
                 .padding(top = 48.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
+            Text(
+                text = "SETTINGS",
+                color = ColorText,
+                style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "SETTINGS",
-                    color = ColorText,
-                    style = MaterialTheme.typography.displayMedium
-                )
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .border(1.dp, ColorBorder)
-                        .clickable(onClick = onClose),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("✕", color = ColorMuted)
-                }
-            }
+            )
 
             Spacer(Modifier.height(16.dp))
 
