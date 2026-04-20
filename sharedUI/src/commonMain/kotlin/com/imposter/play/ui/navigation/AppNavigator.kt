@@ -1,5 +1,13 @@
 package com.imposter.play.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -9,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.scene.Scene
 import androidx.navigation3.ui.NavDisplay
 import com.imposter.play.engine.GameIntent
 import com.imposter.play.engine.GameState
@@ -38,6 +47,20 @@ fun AppNavigator(
 
     NavDisplay(
         backStack = backStack,
+        transitionSpec = {
+            if (isGameplayToGameplay()) {
+                gameplayTransform()
+            } else {
+                setupForwardTransform()
+            }
+        },
+        popTransitionSpec = {
+            if (isGameplayToGameplay()) {
+                gameplayTransform()
+            } else {
+                setupBackTransform()
+            }
+        },
         onBack = {
             when (backStack.lastOrNull()) {
                 is RoleRevealRoute -> {
@@ -55,7 +78,7 @@ fun AppNavigator(
             }
         },
         entryProvider = entryProvider {
-            entry<HomeRoute> {
+            entry<HomeRoute>(metadata = navGroupMetadata(NAV_GROUP_HOME)) {
                 HomeScreen(
                     config = session.config,
                     onDecreasePlayers = { viewModel.onIntent(GameIntent.DecreasePlayerCount) },
@@ -72,12 +95,12 @@ fun AppNavigator(
                     onSettings = { backStack.add(SettingsRoute) },
                 )
             }
-            entry<AddWordsRoute> {
+            entry<AddWordsRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
                 AddWordsScreen(
                     onClose = { backStack.removeLastOrNull() },
                 )
             }
-            entry<CustomizeRoute> {
+            entry<CustomizeRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
                 CustomizeScreen(
                     config = session.config,
                     onPlay = {
@@ -90,7 +113,7 @@ fun AppNavigator(
                     onClose = { backStack.removeLastOrNull() },
                 )
             }
-            entry<SettingsRoute> {
+            entry<SettingsRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
                 SettingsScreen(
                     config = session.config,
                     onConfigChange = { updated ->
@@ -99,7 +122,7 @@ fun AppNavigator(
                     onClose = { backStack.removeLastOrNull() },
                 )
             }
-            entry<RoleRevealRoute> {
+            entry<RoleRevealRoute>(metadata = navGroupMetadata(NAV_GROUP_GAMEPLAY)) {
                 RoleRevealScreen(
                     session = session,
                     role = viewModel.currentPlayerRole(),
@@ -120,7 +143,7 @@ fun AppNavigator(
                     },
                 )
             }
-            entry<DiscussionRoute> {
+            entry<DiscussionRoute>(metadata = navGroupMetadata(NAV_GROUP_GAMEPLAY)) {
                 DiscussionScreen(
                     session = session,
                     onToggleTimer = { viewModel.onIntent(GameIntent.ToggleTimer) },
@@ -140,7 +163,7 @@ fun AppNavigator(
                     },
                 )
             }
-            entry<VoteRoute> {
+            entry<VoteRoute>(metadata = navGroupMetadata(NAV_GROUP_GAMEPLAY)) {
                 VoteScreen(
                     session = session,
                     onCastVote = { index -> viewModel.onIntent(GameIntent.CastVote(index)) },
@@ -150,7 +173,7 @@ fun AppNavigator(
                     },
                 )
             }
-            entry<ResultRoute> {
+            entry<ResultRoute>(metadata = navGroupMetadata(NAV_GROUP_GAMEPLAY)) {
                 ResultScreen(
                     session = session,
                     onPlayAgain = {
@@ -171,4 +194,37 @@ fun AppNavigator(
 //            }
 //        }
 //    }
+}
+
+private const val NAV_GROUP_KEY = "nav_group"
+private const val NAV_GROUP_HOME = "home"
+private const val NAV_GROUP_SETUP = "setup"
+private const val NAV_GROUP_GAMEPLAY = "gameplay"
+
+private fun navGroupMetadata(group: String): Map<String, Any> = mapOf(NAV_GROUP_KEY to group)
+
+private fun Scene<NavKey>.navGroupOrDefault(): String =
+    metadata[NAV_GROUP_KEY] as? String ?: NAV_GROUP_SETUP
+
+private fun AnimatedContentTransitionScope<Scene<NavKey>>.isGameplayToGameplay(): Boolean {
+    return initialState.navGroupOrDefault() == NAV_GROUP_GAMEPLAY &&
+        targetState.navGroupOrDefault() == NAV_GROUP_GAMEPLAY
+}
+
+private fun AnimatedContentTransitionScope<Scene<NavKey>>.setupForwardTransform(): ContentTransform {
+    return (slideInHorizontally(animationSpec = tween(210)) { width -> width / 7 } +
+        fadeIn(animationSpec = tween(210))) togetherWith
+        (slideOutHorizontally(animationSpec = tween(190)) { width -> -width / 10 } +
+            fadeOut(animationSpec = tween(170)))
+}
+
+private fun AnimatedContentTransitionScope<Scene<NavKey>>.setupBackTransform(): ContentTransform {
+    return (slideInHorizontally(animationSpec = tween(210)) { width -> -width / 7 } +
+        fadeIn(animationSpec = tween(210))) togetherWith
+        (slideOutHorizontally(animationSpec = tween(190)) { width -> width / 10 } +
+            fadeOut(animationSpec = tween(170)))
+}
+
+private fun AnimatedContentTransitionScope<Scene<NavKey>>.gameplayTransform(): ContentTransform {
+    return fadeIn(animationSpec = tween(105)) togetherWith fadeOut(animationSpec = tween(95))
 }
