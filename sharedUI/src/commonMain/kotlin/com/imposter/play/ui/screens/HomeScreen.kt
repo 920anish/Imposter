@@ -77,7 +77,7 @@ fun HomeScreen(
             Spacer(Modifier.height(20.dp))
             Text(
                 text = stringResource(Res.string.nav_home_title),
-                style = MaterialTheme.typography.displayLarge,
+                style = MaterialTheme.typography.displayMedium,
                 color = ColorText,
                 textAlign = TextAlign.Center,
             )
