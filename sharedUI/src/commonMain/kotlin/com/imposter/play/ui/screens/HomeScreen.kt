@@ -149,6 +149,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth().height(52.dp),
             )
             // Bottom spacer for centering
+
             Spacer(Modifier.weight(1f))
         }
     }
