@@ -7,13 +7,13 @@ plugins {
 
 android {
     namespace = "com.imposter.play.androidApp"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
 
-        applicationId = "com.imposter.play.androidApp"
+        applicationId = "com.imposter.play"
         versionCode = 1
         versionName = "1.0.0"
     }
@@ -21,6 +21,18 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            ndk.debugSymbolLevel = "SYMBOL_TABLE"
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
     }
 }
 

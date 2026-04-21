@@ -15,7 +15,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.imposter.play"
-        compileSdk = 36
+        compileSdk = 37
 
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
