@@ -14,8 +14,8 @@ android {
         targetSdk = 37
 
         applicationId = "com.imposter.play"
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
     }
 
     compileOptions {
@@ -26,7 +26,6 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            ndk.debugSymbolLevel = "SYMBOL_TABLE"
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
