@@ -10,6 +10,5 @@
 
     <style name="Theme.App" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/imposter_bg</item>
-        <item name="android:statusBarColor">@color/imposter_bg</item>
     </style>
 </resources>
