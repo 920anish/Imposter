@@ -34,6 +34,20 @@ fun AppNavigator(
     val backStack = remember { mutableStateListOf<NavKey>(HomeRoute) }
     val scope = rememberCoroutineScope()
 
+    // Centralized navigation reducers to ensure single source of truth and valid state transitions
+    val safePop: () -> Unit = {
+        if (backStack.size > 1) {
+            backStack.removeLastOrNull()
+        }
+    }
+
+    val resetToHome: () -> Unit = {
+        viewModel.onIntent(GameIntent.PlayAgain)
+        while (backStack.size > 1) {
+            backStack.removeLastOrNull()
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.loadPrefs()
     }
@@ -56,18 +70,10 @@ fun AppNavigator(
         },
         onBack = {
             when (backStack.lastOrNull()) {
-                is RoleRevealRoute -> {
-                    // back from reveal = go home, reset
-                    viewModel.onIntent(GameIntent.PlayAgain)
-                    while (backStack.size > 1) backStack.removeLastOrNull()
-                }
+                is RoleRevealRoute -> resetToHome()
                 is HomeRoute -> return@NavDisplay
-                is CustomizeRoute, is SettingsRoute, is AddWordsRoute -> backStack.removeLastOrNull()
-                else -> {
-                    // discussion, vote, result — back goes home
-                    viewModel.onIntent(GameIntent.PlayAgain)
-                    while (backStack.size > 1) backStack.removeLastOrNull()
-                }
+                is CustomizeRoute, is SettingsRoute, is AddWordsRoute -> safePop()
+                else -> resetToHome()
             }
         },
         entryProvider = entryProvider {
@@ -90,7 +96,7 @@ fun AppNavigator(
             }
             entry<AddWordsRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
                 AddWordsScreen(
-                    onClose = { backStack.removeLastOrNull() },
+                    onClose = safePop,
                 )
             }
             entry<CustomizeRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
@@ -104,7 +110,7 @@ fun AppNavigator(
                             }
                         }
                     },
-                    onClose = { backStack.removeLastOrNull() },
+                    onClose = safePop,
                 )
             }
             entry<SettingsRoute>(metadata = navGroupMetadata(NAV_GROUP_SETUP)) {
@@ -114,7 +120,7 @@ fun AppNavigator(
                     onConfigChange = { updated ->
                         viewModel.onIntent(GameIntent.UpdateSetupConfig(updated))
                     },
-                    onClose = { backStack.removeLastOrNull() },
+                    onClose = safePop,
                 )
             }
             entry<RoleRevealRoute>(metadata = navGroupMetadata(NAV_GROUP_GAMEPLAY)) {
@@ -126,11 +132,11 @@ fun AppNavigator(
                         viewModel.onIntent(GameIntent.NextPlayer)
                         when (val state = viewModel.session.value.state) {
                             is GameState.RoleReveal -> {
-                                backStack.removeLastOrNull() // remove current reveal
+                                safePop() // remove current reveal
                                 backStack.add(RoleRevealRoute(state.playerIndex)) // replace with next
                             }
                             is GameState.Discussion -> {
-                                backStack.removeLastOrNull() // remove last reveal
+                                safePop() // remove last reveal
                                 backStack.add(DiscussionRoute)
                             }
                             else -> Unit
@@ -150,12 +156,7 @@ fun AppNavigator(
                         viewModel.onIntent(GameIntent.SkipToResult)
                         backStack.add(ResultRoute)
                     },
-                    onPlayAgain = {
-                        viewModel.onIntent(GameIntent.PlayAgain)
-                        while (backStack.size > 1) {
-                            backStack.removeLastOrNull()
-                        }
-                    },
+                    onPlayAgain = resetToHome,
                 )
             }
             entry<VoteRoute>(metadata = navGroupMetadata(NAV_GROUP_GAMEPLAY)) {
@@ -171,12 +172,7 @@ fun AppNavigator(
             entry<ResultRoute>(metadata = navGroupMetadata(NAV_GROUP_GAMEPLAY)) {
                 ResultScreen(
                     session = session,
-                    onPlayAgain = {
-                        viewModel.onIntent(GameIntent.PlayAgain)
-                        while (backStack.size > 1) {
-                            backStack.removeLastOrNull()
-                        }
-                    },
+                    onPlayAgain = resetToHome,
                 )
             }
         },

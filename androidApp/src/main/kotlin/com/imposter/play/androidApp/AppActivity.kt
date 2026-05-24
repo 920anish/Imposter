@@ -14,7 +14,14 @@ class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition { !StartupReadiness.isReady.value }
+        
+        try {
+            splashScreen.setKeepOnScreenCondition { !StartupReadiness.isReady.value }
+        } catch (_: UnsupportedOperationException) {
+            // If the device doesn't support the SplashScreen API, we can ignore the exception and proceed without it.
+            // This ensures that the app remains functional on older devices while still providing a splash screen experience on supported devices.
+        }
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
