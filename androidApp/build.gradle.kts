@@ -1,9 +1,21 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.application)
 }
+
+val signingPropsFile =
+    listOf(
+        file("/run/secrets/imposter-signing-properties"),
+        rootProject.file("keystore.properties"),
+    ).firstOrNull { it.canRead() }
+
+val signingProps =
+    Properties().apply {
+        signingPropsFile?.inputStream()?.use { load(it) }
+    }
 
 android {
     namespace = "com.imposter.play.androidApp"
@@ -23,10 +35,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
+    signingConfigs {
+        if (signingPropsFile != null) {
+            create("release") {
+                storeFile = file(signingProps.getProperty("storeFile"))
+                storePassword = signingProps.getProperty("storePassword")
+                keyAlias = signingProps.getProperty("keyAlias")
+                keyPassword = signingProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            if (signingPropsFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
